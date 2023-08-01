@@ -1,0 +1,31 @@
+[package]
+edition = "2021"
+name = "solana-bankrun"
+version = "0.1.0"
+repository = "https://github.com/kevinheavey/solana-bankrun"
+license = "MIT"
+
+[lib]
+crate-type = ["cdylib"]
+
+[dependencies]
+bincode = "1.3.3"
+derive_more = "0.99.17"
+napi = { version = "=2.12.5", features = ["napi4", "napi6", "async"] }
+napi-derive = "=2.12.5"
+serde_json = "^1.0.59"
+solana-banks-interface = "=1.16.0"
+solana-banks-client = "=1.16.0"
+solana-program = "=1.16.0"
+solana-program-test = "=1.16.0"
+solana-sdk = "=1.16.0"
+solana-transaction-status = "=1.16.0"
+tarpc = { version = "0.29.0" }
+tokio = { version = "1.14.1" }
+toml = "0.7.3"
+
+[build-dependencies]
+napi-build = "2.0.1"
+
+[profile.release]
+lto = true

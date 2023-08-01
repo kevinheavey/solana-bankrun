@@ -1,0 +1,15 @@
+{
+  "name": "solana-bankrun-darwin-universal",
+  "version": "0.0.0",
+  "os": [
+    "darwin"
+  ],
+  "main": "solana-bankrun.darwin-universal.node",
+  "files": [
+    "solana-bankrun.darwin-universal.node"
+  ],
+  "license": "MIT",
+  "engines": {
+    "node": ">= 10"
+  }
+}
