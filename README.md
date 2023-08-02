@@ -65,3 +65,12 @@ Some things to note here:
   that we can use in our transactions.
 * We haven't loaded any specific programs, but by default we have access to
   the System Program, the SPL token programs and the SPL memo program.
+
+
+## Getting Started
+
+NPM package is coming soon.
+
+If you want to contribute, make sure you have Yarn and the Rust toolchain installed.
+
+Then run `yarn` to install deps, run `yarn build` to build the binary and `yarn test` to run the tests.
