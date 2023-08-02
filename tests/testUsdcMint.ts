@@ -5,6 +5,7 @@ import {
 	getAssociatedTokenAddressSync,
 	AccountLayout,
 	ACCOUNT_SIZE,
+	TOKEN_PROGRAM_ID,
 } from "@solana/spl-token";
 
 test("infinite usdc mint", async (t) => {
@@ -39,7 +40,7 @@ test("infinite usdc mint", async (t) => {
 				info: {
 					lamports: 1_000_000_000,
 					data: tokenAccData,
-					owner,
+					owner: TOKEN_PROGRAM_ID,
 					executable: false,
 				},
 			},
