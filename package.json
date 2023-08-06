@@ -62,7 +62,7 @@
     "universal": "napi universal",
     "version": "napi version",
     "docdev": "NODE_OPTIONS=--openssl-legacy-provider vuepress dev docs",
-    "docbuild": "NODE_OPTIONS=--openssl-legacy-provider vuepress build docs"
+    "docbuild": "NODE_OPTIONS=--openssl-legacy-provider vuepress build docs && bash doc_imports_hack.sh"
   },
   "packageManager": "yarn@3.5.1",
   "dependencies": {
