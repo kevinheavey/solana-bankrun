@@ -10,9 +10,9 @@ module.exports = {
      * ref：https://v1.vuepress.vuejs.org/theme/default-theme-config.html
      */
     themeConfig: {
-      repo: '',
+      repo: 'kevinheavey/solana-bankrun',
       editLinks: false,
-      docsDir: '',
+      docsDir: 'docs',
       editLinkText: '',
       lastUpdated: false,
       nav: [
@@ -21,18 +21,14 @@ module.exports = {
           link: '/tutorial/',
         },
         {
-          text: 'API',
+          text: 'API Reference',
           link: '/api/',
         },
       ],
       sidebar: {
-        '/tutorial/': [
-          {
-            title: 'Tutorial',
-            path: '/tutorial/',
-          },
-        ],
-      },
+        '/tutorial': 'auto',
+        '/': 'auto',
+      }
     },
   
     /**
