@@ -16,7 +16,7 @@ If you've used [solana-program-test](https://crates.io/crates/solana-program-tes
 you'll be familiar with `bankrun`, since that's what it uses under the hood.
 
 For those unfamiliar, `bankrun` and `solana-program-test` work by spinning up a lightweight
-`BanksServer` that's like an RPC but much faster, and creating a `BanksClient` to talk to the
+`BanksServer` that's like an RPC node but much faster, and creating a `BanksClient` to talk to the
 server. This author thought `solana-program-test` was a boring name, so he chose ``bankrun`` instead
 (you're running Solana [Banks](https://github.com/solana-labs/solana/blob/master/runtime/src/bank.rs)).
 
@@ -27,7 +27,7 @@ any programs of our own. It uses the [ava](https://github.com/avajs/ava)
 test runner but you can use any test runner you like.
 
 Note: you should use the `--no-worker-threads` flag with ava, otherwise
-your tests will likely crash.
+your tests will likely crash for ava-specific reasons.
 
 ```ts
 import test from "ava";
