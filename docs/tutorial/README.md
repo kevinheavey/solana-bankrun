@@ -17,7 +17,7 @@ Now to add the program to our tests we use the `programs` parameter in the `star
 The program name used in this parameter must match the filename without the `.so` extension.
 
 Here's an example using a [simple program](https://github.com/solana-labs/solana-program-library/tree/bd216c8103cd8eb9f5f32e742973e7afb52f3b81/examples/rust/logging)
-from the Solana monorepo that just does some logging:
+from the Solana Program Library that just does some logging:
 
 <<< @/tests/testSplLogging.ts
 
