@@ -1,3 +1,3 @@
 # `bankrun-darwin-x64`
 
-This is the **x86_64-apple-darwin** binary for `bankrun`
+This is the **x86_64-apple-darwin** binary for `solana-bankrun`

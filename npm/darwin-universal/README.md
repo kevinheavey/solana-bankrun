@@ -1,3 +1,3 @@
 # `bankrun-darwin-universal`
 
-This is the **universal-apple-darwin** binary for `bankrun`
+This is the **universal-apple-darwin** binary for `solana-bankrun`
