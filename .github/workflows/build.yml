@@ -24,30 +24,30 @@ jobs:
             target: x86_64-apple-darwin
             build: |
               yarn build
-              strip -x *.node
+              strip -x solana-bankrun/*.node
           - host: ubuntu-latest
             target: x86_64-unknown-linux-gnu
             docker: ghcr.io/napi-rs/napi-rs/nodejs-rust:lts-debian
             build: |-
               set -e &&
               yarn build --target x86_64-unknown-linux-gnu &&
-              strip *.node
+              strip solana-bankrun/*.node
           - host: ubuntu-latest
             target: x86_64-unknown-linux-musl
             docker: ghcr.io/napi-rs/napi-rs/nodejs-rust:lts-alpine
-            build: set -e && yarn build && strip *.node
+            build: set -e && yarn build && strip solana-bankrun/*.node
           - host: macos-latest
             target: aarch64-apple-darwin
             build: |
               yarn build --target aarch64-apple-darwin
-              strip -x *.node
+              strip -x solana-bankrun/*.node
           - host: ubuntu-latest
             target: aarch64-unknown-linux-gnu
             docker: ghcr.io/napi-rs/napi-rs/nodejs-rust:lts-debian-aarch64
             build: |-
               set -e &&
               yarn build --target aarch64-unknown-linux-gnu &&
-              aarch64-unknown-linux-gnu-strip *.node
+              aarch64-unknown-linux-gnu-strip solana-bankrun/*.node
           - host: ubuntu-latest
             target: armv7-unknown-linux-gnueabihf
             setup: |
@@ -55,7 +55,7 @@ jobs:
               sudo apt-get install gcc-arm-linux-gnueabihf -y
             build: |
               yarn build --target armv7-unknown-linux-gnueabihf
-              arm-linux-gnueabihf-strip *.node
+              arm-linux-gnueabihf-strip solana-bankrun/*.node
           - host: ubuntu-latest
             target: aarch64-unknown-linux-musl
             docker: ghcr.io/napi-rs/napi-rs/nodejs-rust:lts-alpine
@@ -63,7 +63,7 @@ jobs:
               set -e &&
               rustup target add aarch64-unknown-linux-musl &&
               yarn build --target aarch64-unknown-linux-musl &&
-              /aarch64-linux-musl-cross/bin/aarch64-linux-musl-strip *.node
+              /aarch64-linux-musl-cross/bin/aarch64-linux-musl-strip solana-bankrun/*.node
     name: stable - ${{ matrix.settings.target }} - node@18
     runs-on: ${{ matrix.settings.host }}
     steps:
@@ -157,7 +157,7 @@ jobs:
             freebsd-version
             yarn install
             yarn build
-            strip -x *.node
+            strip -x solana-bankrun/*.node
             yarn test
             rm -rf node_modules
             rm -rf target
