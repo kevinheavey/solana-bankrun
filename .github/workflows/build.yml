@@ -340,5 +340,5 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: bindings-universal-apple-darwin
-          path: solana-bankrun/solana-bankrun.*.node
+          path: solana-bankrun.*.node
           if-no-files-found: error
