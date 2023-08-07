@@ -3,17 +3,17 @@ env:
   DEBUG: napi:*
   APP_NAME: solana-bankrun
   MACOSX_DEPLOYMENT_TARGET: '10.13'
-# on:
-#   push:
-#     branches: [main]
-#   pull_request:
-#     branches: [main]
-#     paths-ignore:
-#       - '**/*.md'
-#       - LICENSE
-#       - '**/*.gitignore'
-#       - .editorconfig
-#       - docs/**
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+    paths-ignore:
+      - '**/*.md'
+      - LICENSE
+      - '**/*.gitignore'
+      - .editorconfig
+      - docs/**
 jobs:
   build:
     strategy:
