@@ -116,7 +116,7 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: bindings-${{ matrix.settings.target }}
-          path: ${{ env.APP_NAME }}.*.node
+          path: solana-bankrun/solana-bankrun.*.node
           if-no-files-found: error
   build-freebsd:
     runs-on: macos-12
@@ -166,7 +166,7 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: bindings-freebsd
-          path: ${{ env.APP_NAME }}.*.node
+          path: solana-bankrun/solana-bankrun.*.node
           if-no-files-found: error
   test-linux-x64-gnu-binding:
     name: Test bindings on Linux-x64-gnu - node@${{ matrix.node }}
@@ -379,5 +379,5 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: bindings-universal-apple-darwin
-          path: ${{ env.APP_NAME }}.*.node
+          path: solana-bankrun/solana-bankrun.*.node
           if-no-files-found: error
