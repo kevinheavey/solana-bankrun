@@ -43,7 +43,8 @@
     ],
     "require": [
       "ts-node/register"
-    ]
+    ],
+    "concurrency": 1
   },
   "engines": {
     "node": ">= 10"
