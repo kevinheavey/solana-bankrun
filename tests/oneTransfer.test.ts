@@ -1,4 +1,4 @@
-import { start } from "../solana-bankrun";
+import { start } from "solana-bankrun";
 import { PublicKey, Transaction, SystemProgram } from "@solana/web3.js";
 
 test("one transfer", async () => {

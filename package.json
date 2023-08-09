@@ -46,12 +46,12 @@
     "build": "napi build --platform --release solana-bankrun --dts internal.d.ts --js internal.js",
     "build:debug": "napi build --platform solana-bankrun",
     "prepublishOnly": "napi prepublish -t npm",
-    "test": "jest",
+    "test": "RUST_LOG= jest",
     "tsc": "tsc",
     "universal": "napi universal",
     "version": "napi version",
     "docdev": "NODE_OPTIONS=--openssl-legacy-provider vuepress dev docs",
-    "docbuild": "NODE_OPTIONS=--openssl-legacy-provider vuepress build docs && bash doc_imports_hack.sh"
+    "docbuild": "NODE_OPTIONS=--openssl-legacy-provider vuepress build docs"
   },
   "packageManager": "yarn@3.5.1",
   "dependencies": {

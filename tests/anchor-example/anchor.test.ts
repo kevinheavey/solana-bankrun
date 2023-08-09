@@ -1,4 +1,4 @@
-import { startAnchor } from "../../solana-bankrun";
+import { startAnchor } from "solana-bankrun";
 import { PublicKey } from "@solana/web3.js";
 
 test("anchor", async () => {

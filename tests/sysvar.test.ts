@@ -1,4 +1,4 @@
-import { start, Rent, Clock } from "../solana-bankrun";
+import { start, Rent, Clock } from "solana-bankrun";
 
 test("sysvar", async () => {
 	let ctx = await start([], []);

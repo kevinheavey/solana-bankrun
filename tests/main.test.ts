@@ -1,4 +1,4 @@
-import { start, ProgramTestContext } from "../solana-bankrun";
+import { start, ProgramTestContext } from "solana-bankrun";
 import {
 	PublicKey,
 	LAMPORTS_PER_SOL,

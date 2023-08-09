@@ -1,4 +1,4 @@
-import { Clock, start } from "../../solana-bankrun";
+import { Clock, start } from "solana-bankrun";
 import {
 	PublicKey,
 	Transaction,

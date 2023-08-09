@@ -25,7 +25,7 @@ The program name used in this parameter must match the filename without the `.so
 Here's an example using a [simple program](https://github.com/solana-labs/solana-program-library/tree/bd216c8103cd8eb9f5f32e742973e7afb52f3b81/examples/rust/logging)
 from the Solana Program Library that just does some logging:
 
-<<< @/tests/testSplLogging.ts
+<<< @/tests/splLogging.test.ts
 
 The `.so` file must be named `spl_example_logging.so`, since `spl_example_logging` is
 the name we used in the `programs` parameter.
@@ -39,7 +39,7 @@ deployed to the test environment.
 
 Example:
 
-<<< @/tests/anchor-example/testAnchor.ts
+<<< @/tests/anchor-example/anchor.test.ts
 
 ## Time travel
 
@@ -48,7 +48,7 @@ a certain time. With `bankrun` you can dynamically overwrite the `Clock` sysvar 
 Here's an example using a program that panics if `clock.unix_timestamp` is greater than 100
 (which is on January 1st 1970):
 
-<<< @/tests/clock-example/testClock.ts
+<<< @/tests/clock-example/clock.test.ts
 
 See also: `context.warp_to_slot()`, which lets you jump to a future slot.
 
@@ -62,7 +62,7 @@ even though we don't have the USDC mint keypair. This is
 convenient for testing because it means we don't have to
 work with fake USDC in our tests:
 
-<<< @/tests/testUsdcMint.ts
+<<< @/tests/usdcMint.test.ts
 
 ::: tip
 If you want to set account data *after* calling `bankrun.start()`,
