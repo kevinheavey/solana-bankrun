@@ -1,4 +1,3 @@
-import test from "ava";
 import { start } from "../solana-bankrun";
 import {
 	PublicKey,
@@ -6,7 +5,7 @@ import {
 	TransactionInstruction,
 } from "@solana/web3.js";
 
-test("spl logging", async (t) => {
+test("spl logging", async () => {
 	const programId = PublicKey.unique();
 	const context = await start([{ name: "spl_example_logging", programId }], []);
 	const client = context.banksClient;
@@ -27,6 +26,6 @@ test("spl logging", async (t) => {
 	// let's sim it first
 	const simRes = await client.simulateTransaction(tx);
 	const meta = await client.processTransaction(tx);
-	t.deepEqual(simRes.meta?.logMessages, meta?.logMessages);
-	t.deepEqual(meta.logMessages[1], "Program log: static string");
+	expect(simRes.meta?.logMessages).toEqual(meta?.logMessages);
+	expect(meta.logMessages[1]).toBe("Program log: static string");
 });

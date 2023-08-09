@@ -1,8 +1,7 @@
-import test from "ava";
 import { start } from "../solana-bankrun";
 import { PublicKey, Transaction, SystemProgram } from "@solana/web3.js";
 
-test("one transfer", async (t) => {
+test("one transfer", async () => {
 	const context = await start([], []);
 	const client = context.banksClient;
 	const payer = context.payer;
@@ -22,5 +21,5 @@ test("one transfer", async (t) => {
 	tx.sign(payer);
 	await client.processTransaction(tx);
 	const balanceAfter = await client.getBalance(receiver);
-	t.deepEqual(balanceAfter, transferLamports);
+	expect(balanceAfter).toBe(transferLamports);
 });

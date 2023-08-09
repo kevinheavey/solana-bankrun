@@ -1,4 +1,3 @@
-import test from "ava";
 import { start, ProgramTestContext } from "../solana-bankrun";
 import {
 	PublicKey,
@@ -16,16 +15,16 @@ async function getLamports(
 	return acc === null ? null : acc.lamports;
 }
 
-test("hello world", async (t) => {
+test("hello world", async () => {
 	let [ctx, programId, greetedPubkey] = await helloworldProgram();
 	let lamports = await getLamports(ctx, greetedPubkey);
-	t.assert(lamports === LAMPORTS_PER_SOL);
+	expect(lamports === LAMPORTS_PER_SOL);
 	let client = ctx.banksClient;
 	const payer = ctx.payer;
 	const blockhash = ctx.lastBlockhash;
 	const greetedAccountBefore = await client.getAccount(greetedPubkey);
-	t.assert(greetedAccountBefore != null);
-	t.deepEqual(greetedAccountBefore?.data, new Uint8Array([0, 0, 0, 0]));
+	expect(greetedAccountBefore).not.toBeNull();
+	expect(greetedAccountBefore?.data).toEqual(new Uint8Array([0, 0, 0, 0]));
 	const ix = new TransactionInstruction({
 		keys: [{ pubkey: greetedPubkey, isSigner: false, isWritable: true }],
 		programId,
@@ -37,11 +36,11 @@ test("hello world", async (t) => {
 	tx.sign(payer);
 	await client.processTransaction(tx);
 	const greetedAccountAfter = await client.getAccount(greetedPubkey);
-	t.assert(greetedAccountAfter != null);
-	t.deepEqual(greetedAccountAfter?.data, new Uint8Array([1, 0, 0, 0]));
+	expect(greetedAccountAfter).not.toBeNull();
+	expect(greetedAccountAfter?.data).toEqual(new Uint8Array([1, 0, 0, 0]));
 });
 
-test("compute limit", async (t) => {
+test("compute limit", async () => {
 	let [ctx, programId, greetedPubkey] = await helloworldProgram(10n);
 	const ix = new TransactionInstruction({
 		keys: [{ pubkey: greetedPubkey, isSigner: false, isWritable: true }],
@@ -52,26 +51,23 @@ test("compute limit", async (t) => {
 	const payer = ctx.payer;
 	const blockhash = ctx.lastBlockhash;
 	const greetedAccountBefore = await client.getAccount(greetedPubkey);
-	t.assert(greetedAccountBefore != null);
-	t.deepEqual(greetedAccountBefore?.data, new Uint8Array([0, 0, 0, 0]));
+	expect(greetedAccountBefore).not.toBeNull();
+	expect(greetedAccountBefore?.data).toEqual(new Uint8Array([0, 0, 0, 0]));
 	let tx = new Transaction();
 	tx.recentBlockhash = blockhash;
 	tx.add(ix);
 	tx.sign(payer);
-	const error = await t.throwsAsync(
-		async () => await client.processTransaction(tx),
-	);
-	t.assert(error?.message.includes("Program failed to complete"));
+	await expect(client.processTransaction(tx)).rejects.toThrow("Program failed to complete");
 });
 
-test("non-existent account", async (t) => {
+test("non-existent account", async () => {
 	const context = await start([], []);
 	const client = context.banksClient;
 	const acc = await client.getAccount(PublicKey.unique(), "processed");
-	t.is(acc, null);
+	expect(acc).toBeNull();
 });
 
-test("non-existent program", async (t) => {
+test("non-existent program", async () => {
 	const context = await start([], []);
 	const ix = new TransactionInstruction({
 		data: Buffer.alloc(1),
@@ -82,26 +78,21 @@ test("non-existent program", async (t) => {
 	tx.recentBlockhash = context.lastBlockhash;
 	tx.sign(context.payer);
 	const client = context.banksClient;
-	const error = await t.throwsAsync(
-		async () => await client.processTransaction(tx),
-	);
-	t.assert(
-		error?.message.includes("Attempt to load a program that does not exist"),
-	);
+	await expect(client.processTransaction(tx)).rejects.toThrow("Attempt to load a program that does not exist");
 });
 
-test("warp", async (t) => {
+test("warp", async () => {
 	const context = await start([], []);
 	const client = context.banksClient;
 	const slot0 = await client.getSlot();
-	t.deepEqual(slot0, 1n);
+	expect(slot0).toBe(1n);
 	const newSlot = 1000n;
 	context.warpToSlot(newSlot);
 	const slot1 = await client.getSlot();
-	t.deepEqual(slot1, newSlot);
+	expect(slot1).toBe(newSlot);
 });
 
-test("many instructions", async (t) => {
+test("many instructions", async () => {
 	let [ctx, programId, greetedPubkey] = await helloworldProgram();
 	const ix = new TransactionInstruction({
 		keys: [{ pubkey: greetedPubkey, isSigner: false, isWritable: true }],
@@ -112,8 +103,8 @@ test("many instructions", async (t) => {
 	const payer = ctx.payer;
 	const blockhash = ctx.lastBlockhash;
 	const greetedAccountBefore = await client.getAccount(greetedPubkey);
-	t.assert(greetedAccountBefore != null);
-	t.deepEqual(greetedAccountBefore?.data, new Uint8Array([0, 0, 0, 0]));
+	expect(greetedAccountBefore).not.toBeNull();
+	expect(greetedAccountBefore?.data).toEqual(new Uint8Array([0, 0, 0, 0]));
 	const numIxs = 64;
 	const ixs = Array(numIxs).fill(ix);
 	let tx = new Transaction();
@@ -122,18 +113,18 @@ test("many instructions", async (t) => {
 	tx.sign(payer);
 	await client.processTransaction(tx);
 	const greetedAccountAfter = await client.getAccount(greetedPubkey);
-	t.assert(greetedAccountAfter != null);
-	t.deepEqual(greetedAccountAfter?.data, new Uint8Array([64, 0, 0, 0]));
+	expect(greetedAccountAfter).not.toBeNull();
+	expect(greetedAccountAfter?.data).toEqual(new Uint8Array([64, 0, 0, 0]));
 });
 
-test("add program via setAccount", async (t) => {
+test("add program via setAccount", async () => {
 	let [ctx, programId, greetedPubkey] = await helloworldProgramViaSetAccount();
 	let client = ctx.banksClient;
 	const payer = ctx.payer;
 	const blockhash = ctx.lastBlockhash;
 	const greetedAccountBefore = await client.getAccount(greetedPubkey);
-	t.assert(greetedAccountBefore != null);
-	t.deepEqual(greetedAccountBefore?.data, new Uint8Array([0, 0, 0, 0]));
+	expect(greetedAccountBefore).not.toBeNull();
+	expect(greetedAccountBefore?.data).toEqual(new Uint8Array([0, 0, 0, 0]));
 	const ix = new TransactionInstruction({
 		keys: [{ pubkey: greetedPubkey, isSigner: false, isWritable: true }],
 		programId,
@@ -145,6 +136,6 @@ test("add program via setAccount", async (t) => {
 	tx.sign(payer);
 	await client.processTransaction(tx);
 	const greetedAccountAfter = await client.getAccount(greetedPubkey);
-	t.assert(greetedAccountAfter != null);
-	t.deepEqual(greetedAccountAfter?.data, new Uint8Array([1, 0, 0, 0]));
+	expect(greetedAccountAfter).not.toBeNull();
+	expect(greetedAccountAfter?.data).toEqual(new Uint8Array([1, 0, 0, 0]));
 });

@@ -23,18 +23,15 @@ server. This author thought `solana-program-test` was a boring name, so he chose
 ## Minimal example
 
 This example just transfers lamports from Alice to Bob without loading
-any programs of our own. It uses the [ava](https://github.com/avajs/ava)
+any programs of our own. It uses the [jest](https://jestjs.io/)
 test runner but you can use any test runner you like.
 
-Note: you should use the `--no-worker-threads` flag with ava, otherwise
-your tests will likely crash for ava-specific reasons.
 
 ```ts
-import test from "ava";
 import { start } from "solana-bankrun";
 import { PublicKey, Transaction, SystemProgram } from "@solana/web3.js";
 
-test("one transfer", async (t) => {
+test("one transfer", async () => {
 	const context = await start([], []);
 	const client = context.banksClient;
 	const payer = context.payer;
@@ -54,7 +51,7 @@ test("one transfer", async (t) => {
 	tx.sign(payer);
 	await client.processTransaction(tx);
 	const balanceAfter = await client.getBalance(receiver);
-	t.deepEqual(balanceAfter, transferLamports);
+	expect(balanceAfter).toEqual(transferLamports);
 });
 ```
 

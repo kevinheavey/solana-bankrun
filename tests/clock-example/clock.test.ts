@@ -1,4 +1,3 @@
-import test from "ava";
 import { Clock, start } from "../../solana-bankrun";
 import {
 	PublicKey,
@@ -6,7 +5,7 @@ import {
 	TransactionInstruction,
 } from "@solana/web3.js";
 
-test("clock", async (t) => {
+test("clock", async () => {
 	const programId = PublicKey.unique();
 	const context = await start(
 		[{ name: "bankrun_clock_example", programId }],
@@ -23,10 +22,7 @@ test("clock", async (t) => {
 	tx.add(...ixs);
 	tx.sign(payer);
 	// this will fail because it's not January 1970 anymore
-	const error = await t.throwsAsync(
-		async () => await client.processTransaction(tx),
-	);
-	t.assert(error?.message.includes("Program failed to complete"));
+	await expect(client.processTransaction(tx)).rejects.toThrow("Program failed to complete");
 	// so let's turn back time
 	const currentClock = await client.getClock();
 	context.setClock(

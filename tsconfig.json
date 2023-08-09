@@ -9,7 +9,17 @@
         "moduleResolution": "node",
         "sourceMap": true,
         "outDir": "dist",
-        "allowJs": true
+        "allowJs": true,
+        "baseUrl": "./solana-bankrun",
+        "paths": {
+          "@solana-bankrun": [
+            "./"
+          ],
+          "@solana-bankrun/*": [
+            "./*"
+          ]
+        },
+        "resolveJsonModule": true
     },
     "include": [
         "solana-bankrun/**/*"
