@@ -3,6 +3,9 @@
   "version": "0.0.0",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
+  "files": [
+    "dist/"
+  ],
   "napi": {
     "name": "solana-bankrun",
     "triples": {
@@ -21,30 +24,19 @@
   "devDependencies": {
     "@napi-rs/cli": "^2.15.2",
     "@solana/spl-token": "^0.3.7",
+    "@types/jest": "^29.5.3",
     "@types/node-fetch": "^2.6.4",
-    "ava": "^5.1.1",
+    "jest": "^29.6.1",
     "markdown-it": "^13.0.1",
     "markdown-it-include": "^2.0.0",
     "rome": "^12.0.0",
+    "ts-jest": "^29.1.1",
     "ts-node": "^10.9.1",
     "typedoc": "^0.24.0",
     "typedoc-plugin-markdown": "^3.15.3",
     "typescript": "^5.0.4",
     "vuepress": "^1.9.9",
     "vuepress-plugin-typedoc": "^0.12.1"
-  },
-  "ava": {
-    "timeout": "3m",
-    "extensions": [
-      "ts"
-    ],
-    "files": [
-      "!tests/util.ts"
-    ],
-    "require": [
-      "ts-node/register"
-    ],
-    "concurrency": 1
   },
   "engines": {
     "node": ">= 10"
@@ -54,12 +46,12 @@
     "build": "napi build --platform --release solana-bankrun --dts internal.d.ts --js internal.js",
     "build:debug": "napi build --platform solana-bankrun",
     "prepublishOnly": "napi prepublish -t npm",
-    "test": "ava --no-worker-threads",
+    "test": "RUST_LOG= jest",
     "tsc": "tsc",
     "universal": "napi universal",
     "version": "napi version",
     "docdev": "NODE_OPTIONS=--openssl-legacy-provider vuepress dev docs",
-    "docbuild": "NODE_OPTIONS=--openssl-legacy-provider vuepress build docs && bash doc_imports_hack.sh"
+    "docbuild": "NODE_OPTIONS=--openssl-legacy-provider vuepress build docs"
   },
   "packageManager": "yarn@3.5.1",
   "dependencies": {

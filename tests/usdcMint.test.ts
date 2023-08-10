@@ -1,5 +1,4 @@
-import test from "ava";
-import { start } from "../solana-bankrun";
+import { start } from "solana-bankrun";
 import { PublicKey } from "@solana/web3.js";
 import {
 	getAssociatedTokenAddressSync,
@@ -8,7 +7,7 @@ import {
 	TOKEN_PROGRAM_ID,
 } from "@solana/spl-token";
 
-test("infinite usdc mint", async (t) => {
+test("infinite usdc mint", async () => {
 	const owner = PublicKey.unique();
 	const usdcMint = new PublicKey(
 		"EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
@@ -48,8 +47,8 @@ test("infinite usdc mint", async (t) => {
 	);
 	const client = context.banksClient;
 	const rawAccount = await client.getAccount(ata);
-	t.assert(rawAccount != null);
+	expect(rawAccount).not.toBeNull();
 	const rawAccountData = rawAccount!.data;
 	const decoded = AccountLayout.decode(rawAccountData);
-	t.deepEqual(decoded.amount, usdcToOwn);
+	expect(decoded.amount).toBe(usdcToOwn);
 });

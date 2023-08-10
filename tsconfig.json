@@ -6,12 +6,18 @@
         "allowSyntheticDefaultImports": true,
         "target": "es2020",
         "noImplicitAny": true,
-        "moduleResolution": "node",
         "sourceMap": true,
         "outDir": "dist",
-        "allowJs": true
+        "allowJs": true,
+        "baseUrl": "./solana-bankrun",
+        "paths": {
+          "solana-bankrun": [
+            "./"
+          ]
+        },
+        "resolveJsonModule": true
     },
     "include": [
-        "solana-bankrun/**/*"
+        "./solana-bankrun/**/*"
     ]
 }
