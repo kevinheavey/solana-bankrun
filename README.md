@@ -26,6 +26,10 @@ This example just transfers lamports from Alice to Bob without loading
 any programs of our own. It uses the [jest](https://jestjs.io/)
 test runner but you can use any test runner you like.
 
+Note: If you have multiple test files you should disable parallel tests using the `--runInBand` Jest flag for now.
+There is an [open issue](https://github.com/kevinheavey/solana-bankrun/issues/2)
+where concurrent Jest tests occasionally fail due to the program name getting garbled.
+
 
 ```ts
 import { start } from "solana-bankrun";

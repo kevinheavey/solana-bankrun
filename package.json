@@ -46,7 +46,7 @@
     "build": "napi build --platform --release solana-bankrun --dts internal.d.ts --js internal.js",
     "build:debug": "napi build --platform solana-bankrun",
     "prepublishOnly": "napi prepublish -t npm",
-    "test": "RUST_LOG= jest",
+    "test": "RUST_LOG= jest --runInBand",
     "tsc": "tsc",
     "universal": "napi universal",
     "version": "napi version",
