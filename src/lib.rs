@@ -385,7 +385,7 @@ impl BanksClient {
         &mut self,
         signature: Uint8Array,
     ) -> Result<Option<TransactionStatus>> {
-        let sig = Signature::new(signature.as_ref());
+        let sig = Signature::try_from(signature.as_ref()).unwrap();
         let res = self.0.get_transaction_status(sig).await;
         match res {
             Ok(x) => Ok(x.map(transaction_status_from_banks)),
@@ -400,7 +400,7 @@ impl BanksClient {
     ) -> Result<Vec<Option<TransactionStatus>>> {
         let sigs: Vec<Signature> = signatures
             .into_iter()
-            .map(|s| Signature::new(s.as_ref()))
+            .map(|s| Signature::try_from(s.as_ref()).unwrap())
             .collect();
         let res = self.0.get_transaction_statuses(sigs).await;
         match res {
