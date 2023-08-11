@@ -125,7 +125,7 @@ export class BanksTransactionResultWithMeta {
  * A client for the ledger state, from the perspective of an arbitrary validator.
  *
  * The client is used to send transactions and query account data, among other things.
- * Use `bankrun.start()` to initialize a BanksClient.
+ * Use `start()` to initialize a BanksClient.
  */
 export class BanksClient {
 	constructor(inner: BanksClientInner) {
@@ -309,7 +309,7 @@ export class BanksClient {
 }
 
 /**
- * The result of calling `bankrun.start()`.
+ * The result of calling `start()`.
  *
  * Contains a BanksClient, a recent blockhash and a funded payer keypair.
  */

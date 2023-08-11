@@ -65,7 +65,7 @@ work with fake USDC in our tests:
 <<< @/tests/usdcMint.test.ts
 
 ::: tip
-If you want to set account data *after* calling `bankrun.start()`,
+If you want to set account data *after* calling `start()`,
 you can use `context.set_account()`.
 :::
 
