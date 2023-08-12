@@ -1,6 +1,6 @@
 {
   "name": "solana-bankrun",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "files": [
@@ -49,7 +49,7 @@
     "test": "RUST_LOG= jest --runInBand",
     "tsc": "tsc",
     "universal": "napi universal",
-    "version": "napi version",
+    "bumpPatch": "yarn version --patch && cargo bump patch && napi version",
     "docdev": "NODE_OPTIONS=--openssl-legacy-provider vuepress dev docs",
     "docbuild": "NODE_OPTIONS=--openssl-legacy-provider vuepress build docs"
   },
