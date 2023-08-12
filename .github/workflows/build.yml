@@ -333,8 +333,6 @@ jobs:
           path: artifacts
       - name: Combine binaries
         run: yarn universal
-      - name: List files
-        run: ls . solana-bankrun/ dist/
       - name: Test universal binary
         run: cp solana-bankrun.darwin-universal.node solana-bankrun/ && yarn test
       - name: Upload artifact
