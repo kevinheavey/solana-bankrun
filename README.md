@@ -65,14 +65,14 @@ Some things to note here:
   the System Program, the SPL token programs and the SPL memo program.
 
 
-## Getting Started
-
-### Installation:
+## Installation:
 
 ```
 yarn add solana-bankrun
 ```
 
-If you want to contribute, make sure you have Yarn and the Rust toolchain installed.
+## Contributing
+
+Make sure you have Yarn and the Rust toolchain installed.
 
 Then run `yarn` to install deps, run `yarn build` to build the binary and `yarn test` to run the tests.
