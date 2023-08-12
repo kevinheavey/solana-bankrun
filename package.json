@@ -1,63 +1,62 @@
 {
-  "name": "solana-bankrun",
-  "version": "0.0.2",
-  "main": "dist/index.js",
-  "types": "dist/index.d.ts",
-  "files": [
-    "dist/"
-  ],
-  "napi": {
-    "name": "solana-bankrun",
-    "triples": {
-      "defaults": false,
-      "additional": [
-        "x86_64-apple-darwin",
-        "x86_64-unknown-linux-gnu",
-        "aarch64-apple-darwin",
-        "x86_64-unknown-linux-musl",
-        "x86_64-unknown-freebsd",
-        "universal-apple-darwin"
-      ]
-    }
-  },
-  "license": "MIT",
-  "devDependencies": {
-    "@napi-rs/cli": "^2.15.2",
-    "@solana/spl-token": "^0.3.7",
-    "@types/jest": "^29.5.3",
-    "@types/node-fetch": "^2.6.4",
-    "jest": "^29.6.1",
-    "markdown-it": "^13.0.1",
-    "markdown-it-include": "^2.0.0",
-    "rome": "^12.0.0",
-    "ts-jest": "^29.1.1",
-    "ts-node": "^10.9.1",
-    "typedoc": "^0.24.0",
-    "typedoc-plugin-markdown": "^3.15.3",
-    "typescript": "^5.0.4",
-    "vuepress": "^1.9.9",
-    "vuepress-plugin-typedoc": "^0.12.1"
-  },
-  "engines": {
-    "node": ">= 10"
-  },
-  "scripts": {
-    "artifacts": "napi artifacts",
-    "build": "napi build --platform --release solana-bankrun --dts internal.d.ts --js internal.js",
-    "build:debug": "napi build --platform solana-bankrun",
-    "prepublishOnly": "napi prepublish -t npm",
-    "test": "RUST_LOG= jest --runInBand",
-    "tsc": "tsc",
-    "universal": "napi universal",
-    "bumpPatch": "yarn version --patch && cargo bump patch && napi version",
-    "bumpMinor": "yarn version --minor && cargo bump minor && napi version",
-    "bumpMajor": "yarn version --major && cargo bump major && napi version",
-    "docdev": "NODE_OPTIONS=--openssl-legacy-provider vuepress dev docs",
-    "docbuild": "NODE_OPTIONS=--openssl-legacy-provider vuepress build docs"
-  },
-  "packageManager": "yarn@3.5.1",
-  "dependencies": {
-    "@solana/web3.js": "^1.68.0",
-    "bs58": "^4.0.1"
-  }
+	"name": "solana-bankrun",
+	"version": "0.0.2",
+	"main": "dist/index.js",
+	"types": "dist/index.d.ts",
+	"files": ["dist/"],
+	"napi": {
+		"name": "solana-bankrun",
+		"triples": {
+			"defaults": false,
+			"additional": [
+				"x86_64-apple-darwin",
+				"x86_64-unknown-linux-gnu",
+				"aarch64-apple-darwin",
+				"x86_64-unknown-linux-musl",
+				"x86_64-unknown-freebsd",
+				"universal-apple-darwin"
+			]
+		}
+	},
+	"license": "MIT",
+	"devDependencies": {
+		"@napi-rs/cli": "^2.15.2",
+		"@solana/spl-token": "^0.3.7",
+		"@types/jest": "^29.5.3",
+		"@types/node-fetch": "^2.6.4",
+		"jest": "^29.6.1",
+		"markdown-it": "^13.0.1",
+		"markdown-it-include": "^2.0.0",
+		"rome": "^12.0.0",
+		"ts-jest": "^29.1.1",
+		"ts-node": "^10.9.1",
+		"typedoc": "^0.24.0",
+		"typedoc-plugin-markdown": "^3.15.3",
+		"typescript": "^5.0.4",
+		"vuepress": "^1.9.9",
+		"vuepress-plugin-typedoc": "^0.12.1"
+	},
+	"engines": {
+		"node": ">= 10"
+	},
+	"scripts": {
+		"artifacts": "napi artifacts",
+		"build": "napi build --platform --release solana-bankrun --dts internal.d.ts --js internal.js",
+		"build:debug": "napi build --platform solana-bankrun",
+		"fmt": "rome format --write solana-bankrun/index.ts tests/ jest.config.ts tsconfig.json package.json",
+		"prepublishOnly": "napi prepublish -t npm",
+		"test": "RUST_LOG= jest --runInBand",
+		"tsc": "tsc",
+		"universal": "napi universal",
+		"bumpPatch": "yarn version --patch && cargo bump patch && napi version",
+		"bumpMinor": "yarn version --minor && cargo bump minor && napi version",
+		"bumpMajor": "yarn version --major && cargo bump major && napi version",
+		"docdev": "NODE_OPTIONS=--openssl-legacy-provider vuepress dev docs",
+		"docbuild": "NODE_OPTIONS=--openssl-legacy-provider vuepress build docs"
+	},
+	"packageManager": "yarn@3.5.1",
+	"dependencies": {
+		"@solana/web3.js": "^1.68.0",
+		"bs58": "^4.0.1"
+	}
 }
