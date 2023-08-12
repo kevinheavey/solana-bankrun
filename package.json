@@ -52,7 +52,7 @@
 		"bumpMinor": "yarn version --minor && cargo bump minor && napi version",
 		"bumpMajor": "yarn version --major && cargo bump major && napi version",
 		"docdev": "NODE_OPTIONS=--openssl-legacy-provider vuepress dev docs",
-		"docbuild": "NODE_OPTIONS=--openssl-legacy-provider vuepress build docs"
+		"docs:build": "NODE_OPTIONS=--openssl-legacy-provider vuepress build docs"
 	},
 	"packageManager": "yarn@3.5.1",
 	"dependencies": {

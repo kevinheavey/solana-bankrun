@@ -3,6 +3,7 @@ module.exports = {
      * Ref：https://v1.vuepress.vuejs.org/config/#title
      */
     title: 'Bankrun',
+    base: '/solana-bankrun/',
   
     /**
      * Theme configuration, here is the default theme configuration for VuePress.
