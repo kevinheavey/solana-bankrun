@@ -333,6 +333,8 @@ jobs:
           path: artifacts
       - name: Combine binaries
         run: yarn universal
+      - name: Test universal binary
+        run: cp solana-bankrun.darwin-universal.node solana-bankrun && yarn test
       - name: Upload artifact
         uses: actions/upload-artifact@v3
         with:
