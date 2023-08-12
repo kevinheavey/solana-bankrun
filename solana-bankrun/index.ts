@@ -175,7 +175,10 @@ export class BanksClient {
 	): Promise<BanksTransactionMeta> {
 		let serialized = tx.serialize();
 		let internal = this.inner;
-		let inner = tx instanceof Transaction ? await internal.processLegacyTransaction(serialized) : await internal.processVersionedTransaction(serialized);
+		let inner =
+			tx instanceof Transaction
+				? await internal.processLegacyTransaction(serialized)
+				: await internal.processVersionedTransaction(serialized);
 		return new BanksTransactionMeta(inner);
 	}
 
@@ -192,7 +195,16 @@ export class BanksClient {
 		let internal = this.inner;
 		let serialized = tx.serialize();
 		let commitmentConverted = convertCommitment(commitment);
-		let inner = tx instanceof Transaction ? await internal.simulateLegacyTransaction(serialized, commitmentConverted) : await internal.simulateVersionedTransaction(serialized, commitmentConverted);
+		let inner =
+			tx instanceof Transaction
+				? await internal.simulateLegacyTransaction(
+						serialized,
+						commitmentConverted,
+				  )
+				: await internal.simulateVersionedTransaction(
+						serialized,
+						commitmentConverted,
+				  );
 		return new BanksTransactionResultWithMeta(inner);
 	}
 

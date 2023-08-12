@@ -57,7 +57,9 @@ test("compute limit", async () => {
 	tx.recentBlockhash = blockhash;
 	tx.add(ix);
 	tx.sign(payer);
-	await expect(client.processTransaction(tx)).rejects.toThrow("Program failed to complete");
+	await expect(client.processTransaction(tx)).rejects.toThrow(
+		"Program failed to complete",
+	);
 });
 
 test("non-existent account", async () => {
@@ -78,7 +80,9 @@ test("non-existent program", async () => {
 	tx.recentBlockhash = context.lastBlockhash;
 	tx.sign(context.payer);
 	const client = context.banksClient;
-	await expect(client.processTransaction(tx)).rejects.toThrow("Attempt to load a program that does not exist");
+	await expect(client.processTransaction(tx)).rejects.toThrow(
+		"Attempt to load a program that does not exist",
+	);
 });
 
 test("warp", async () => {

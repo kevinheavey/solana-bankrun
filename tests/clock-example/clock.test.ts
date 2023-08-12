@@ -22,7 +22,9 @@ test("clock", async () => {
 	tx.add(...ixs);
 	tx.sign(payer);
 	// this will fail because it's not January 1970 anymore
-	await expect(client.processTransaction(tx)).rejects.toThrow("Program failed to complete");
+	await expect(client.processTransaction(tx)).rejects.toThrow(
+		"Program failed to complete",
+	);
 	// so let's turn back time
 	const currentClock = await client.getClock();
 	context.setClock(
