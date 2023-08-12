@@ -848,3 +848,11 @@ pub async fn start(
     );
     pt.start_with_context().await.into()
 }
+
+#[cfg(test)]
+mod tests {
+    #[test]
+    fn hi() {
+        assert!(1 == 1);
+    }
+}
