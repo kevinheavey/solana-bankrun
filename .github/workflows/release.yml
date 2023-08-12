@@ -23,6 +23,8 @@ jobs:
           path: artifacts
       - name: Move artifacts
         run: yarn artifacts
+      - name: Compile Typescript
+        run: yarn tsc
       - name: List packages
         run: ls -R ./npm
         shell: bash
