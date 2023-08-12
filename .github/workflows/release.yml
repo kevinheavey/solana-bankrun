@@ -18,8 +18,9 @@ jobs:
       - name: Install dependencies
         run: yarn install
       - name: Download all artifacts
-        uses: actions/download-artifact@v3
+        uses: dawidd6/action-download-artifact@v2
         with:
+          workflow: build.yml
           path: artifacts
       - name: Move artifacts
         run: yarn artifacts
