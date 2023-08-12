@@ -5,9 +5,6 @@ for testing Solana programs in NodeJS.
 
 While people often use `solana-test-validator` for this,
 `bankrun` is orders of magnitude faster and far more convenient.
-You don't have to
-take care of an external process and you can start as many `bankrun`
-instances as you like without worrying about ports in use or hogging your machine's resources.
 
 You can also do things that are not possible with `solana-test-validator`,
 such as jumping back and forth in time or dynamically setting account data.
@@ -70,7 +67,11 @@ Some things to note here:
 
 ## Getting Started
 
-NPM package is coming soon.
+### Installation:
+
+```
+yarn add solana-bankrun
+```
 
 If you want to contribute, make sure you have Yarn and the Rust toolchain installed.
 
