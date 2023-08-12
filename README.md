@@ -3,9 +3,6 @@
 </div>
 
 ---
-
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://github.com/kevinheavey/solders/blob/main/LICENSE)
-
 # Bankrun
 
 `Bankrun` is a superfast, powerful and lightweight framework
