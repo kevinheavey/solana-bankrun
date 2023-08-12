@@ -19,7 +19,7 @@ test("spl logging", async () => {
 			],
 		}),
 	];
-	let tx = new Transaction();
+	const tx = new Transaction();
 	tx.recentBlockhash = blockhash;
 	tx.add(...ixs);
 	tx.sign(payer);

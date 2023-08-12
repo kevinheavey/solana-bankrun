@@ -19,7 +19,7 @@ export async function helloworldProgram(
 			},
 		},
 	];
-	let ctx = await start(programs, accounts, computeMaxUnits);
+	const ctx = await start(programs, accounts, computeMaxUnits);
 	// let ctx = await start([], [], computeMaxUnits);
 	return [ctx, programId, greetedPubkey];
 }
@@ -41,7 +41,7 @@ export async function helloworldProgramViaSetAccount(
 			},
 		},
 	];
-	let ctx = await start([], accounts, computeMaxUnits);
+	const ctx = await start([], accounts, computeMaxUnits);
 	const executableAccount = {
 		lamports: 1_000_000_000_000,
 		executable: true,

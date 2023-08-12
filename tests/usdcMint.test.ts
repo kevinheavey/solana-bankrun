@@ -48,7 +48,7 @@ test("infinite usdc mint", async () => {
 	const client = context.banksClient;
 	const rawAccount = await client.getAccount(ata);
 	expect(rawAccount).not.toBeNull();
-	const rawAccountData = rawAccount!.data;
+	const rawAccountData = rawAccount?.data;
 	const decoded = AccountLayout.decode(rawAccountData);
 	expect(decoded.amount).toBe(usdcToOwn);
 });

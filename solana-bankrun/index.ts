@@ -92,7 +92,7 @@ export class BanksTransactionMeta {
 	}
 	/** The transaction return data, if present. */
 	get returnData(): TransactionReturnData | null {
-		let inner = this.inner.returnData;
+		const inner = this.inner.returnData;
 		if (!inner) return null;
 		return new TransactionReturnData(inner);
 	}
@@ -115,7 +115,7 @@ export class BanksTransactionResultWithMeta {
 	}
 	/** The transaction metadata. */
 	get meta(): BanksTransactionMeta | null {
-		let inner = this.inner.meta;
+		const inner = this.inner.meta;
 		if (!inner) return null;
 		return new BanksTransactionMeta(inner);
 	}
@@ -144,7 +144,7 @@ export class BanksClient {
 		address: PublicKey,
 		commitment?: Commitment,
 	): Promise<AccountInfoBytes | null> {
-		let inner = await this.inner.getAccount(
+		const inner = await this.inner.getAccount(
 			address.toBytes(),
 			convertCommitment(commitment),
 		);
@@ -156,9 +156,9 @@ export class BanksClient {
 	 * @param tx - The transaction to send.
 	 */
 	async sendTransaction(tx: Transaction | VersionedTransaction) {
-		let serialized = tx.serialize();
-		let internal = this.inner;
-		let method =
+		const serialized = tx.serialize();
+		const internal = this.inner;
+		const method =
 			tx instanceof Transaction
 				? internal.sendLegacyTransaction
 				: internal.sendVersionedTransaction;
@@ -173,9 +173,9 @@ export class BanksClient {
 	async processTransaction(
 		tx: Transaction | VersionedTransaction,
 	): Promise<BanksTransactionMeta> {
-		let serialized = tx.serialize();
-		let internal = this.inner;
-		let inner =
+		const serialized = tx.serialize();
+		const internal = this.inner;
+		const inner =
 			tx instanceof Transaction
 				? await internal.processLegacyTransaction(serialized)
 				: await internal.processVersionedTransaction(serialized);
@@ -192,10 +192,10 @@ export class BanksClient {
 		tx: Transaction | VersionedTransaction,
 		commitment?: Commitment,
 	): Promise<BanksTransactionResultWithMeta> {
-		let internal = this.inner;
-		let serialized = tx.serialize();
-		let commitmentConverted = convertCommitment(commitment);
-		let inner =
+		const internal = this.inner;
+		const serialized = tx.serialize();
+		const commitmentConverted = convertCommitment(commitment);
+		const inner =
 			tx instanceof Transaction
 				? await internal.simulateLegacyTransaction(
 						serialized,
@@ -222,7 +222,7 @@ export class BanksClient {
 	async getTransactionStatus(
 		signature: TransactionSignature,
 	): Promise<TransactionStatus | null> {
-		let decodedSig = bs58.decode(signature);
+		const decodedSig = bs58.decode(signature);
 		return await this.inner.getTransactionStatus(decodedSig);
 	}
 
@@ -234,7 +234,7 @@ export class BanksClient {
 	async getTransactionStatuses(
 		signatures: TransactionSignature[],
 	): Promise<(TransactionStatus | undefined | null)[]> {
-		let decoded = signatures.map(bs58.decode);
+		const decoded = signatures.map(bs58.decode);
 		return await this.inner.getTransactionStatuses(decoded);
 	}
 
@@ -296,7 +296,7 @@ export class BanksClient {
 	async getLatestBlockhash(
 		commitment?: Commitment,
 	): Promise<[Blockhash, bigint] | null> {
-		let inner = await this.inner.getLatestBlockhash(
+		const inner = await this.inner.getLatestBlockhash(
 			convertCommitment(commitment),
 		);
 		if (!inner) return null;
@@ -407,7 +407,7 @@ export async function start(
 	computeMaxUnits?: bigint,
 	transactionAccountLockLimit?: bigint,
 ): Promise<ProgramTestContext> {
-	let ctx = await startInner(
+	const ctx = await startInner(
 		programs.map((p) => [p.name, p.programId.toBytes()]),
 		accounts.map((a) => [a.address.toBytes(), fromAccountInfo(a.info)]),
 		computeMaxUnits,
@@ -436,7 +436,7 @@ export async function startAnchor(
 	computeMaxUnits?: bigint,
 	transactionAccountLockLimit?: bigint,
 ): Promise<ProgramTestContext> {
-	let ctx = await startAnchorInner(
+	const ctx = await startAnchorInner(
 		path,
 		extraPrograms.map((p) => [p.name, p.programId.toBytes()]),
 		accounts.map((a) => [a.address.toBytes(), fromAccountInfo(a.info)]),

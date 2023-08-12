@@ -17,7 +17,7 @@ test("clock", async () => {
 	const ixs = [
 		new TransactionInstruction({ keys: [], programId, data: Buffer.from("") }),
 	];
-	let tx = new Transaction();
+	const tx = new Transaction();
 	tx.recentBlockhash = blockhash;
 	tx.add(...ixs);
 	tx.sign(payer);
@@ -43,7 +43,7 @@ test("clock", async () => {
 			data: Buffer.from("foobar"), // unused, just here to dedup the tx
 		}),
 	];
-	let tx2 = new Transaction();
+	const tx2 = new Transaction();
 	tx2.recentBlockhash = blockhash;
 	tx2.add(...ixs2);
 	tx2.sign(payer);

@@ -1,8 +1,8 @@
 import { start, Rent, Clock } from "solana-bankrun";
 
 test("sysvar", async () => {
-	let ctx = await start([], []);
-	let client = ctx.banksClient;
+	const ctx = await start([], []);
+	const client = ctx.banksClient;
 	const rentBefore = await client.getRent();
 	expect(rentBefore.burnPercent).toBe(50);
 	expect(rentBefore.minimumBalance(123n)).toBe(1746960n);

@@ -11,15 +11,15 @@ async function getLamports(
 	ctx: ProgramTestContext,
 	address: PublicKey,
 ): Promise<number | null> {
-	let acc = await ctx.banksClient.getAccount(address);
+	const acc = await ctx.banksClient.getAccount(address);
 	return acc === null ? null : acc.lamports;
 }
 
 test("hello world", async () => {
-	let [ctx, programId, greetedPubkey] = await helloworldProgram();
-	let lamports = await getLamports(ctx, greetedPubkey);
+	const [ctx, programId, greetedPubkey] = await helloworldProgram();
+	const lamports = await getLamports(ctx, greetedPubkey);
 	expect(lamports === LAMPORTS_PER_SOL);
-	let client = ctx.banksClient;
+	const client = ctx.banksClient;
 	const payer = ctx.payer;
 	const blockhash = ctx.lastBlockhash;
 	const greetedAccountBefore = await client.getAccount(greetedPubkey);
@@ -30,7 +30,7 @@ test("hello world", async () => {
 		programId,
 		data: Buffer.from([0]),
 	});
-	let tx = new Transaction();
+	const tx = new Transaction();
 	tx.recentBlockhash = blockhash;
 	tx.add(ix);
 	tx.sign(payer);
@@ -41,19 +41,19 @@ test("hello world", async () => {
 });
 
 test("compute limit", async () => {
-	let [ctx, programId, greetedPubkey] = await helloworldProgram(10n);
+	const [ctx, programId, greetedPubkey] = await helloworldProgram(10n);
 	const ix = new TransactionInstruction({
 		keys: [{ pubkey: greetedPubkey, isSigner: false, isWritable: true }],
 		programId,
 		data: Buffer.from([0]),
 	});
-	let client = ctx.banksClient;
+	const client = ctx.banksClient;
 	const payer = ctx.payer;
 	const blockhash = ctx.lastBlockhash;
 	const greetedAccountBefore = await client.getAccount(greetedPubkey);
 	expect(greetedAccountBefore).not.toBeNull();
 	expect(greetedAccountBefore?.data).toEqual(new Uint8Array([0, 0, 0, 0]));
-	let tx = new Transaction();
+	const tx = new Transaction();
 	tx.recentBlockhash = blockhash;
 	tx.add(ix);
 	tx.sign(payer);
@@ -97,13 +97,13 @@ test("warp", async () => {
 });
 
 test("many instructions", async () => {
-	let [ctx, programId, greetedPubkey] = await helloworldProgram();
+	const [ctx, programId, greetedPubkey] = await helloworldProgram();
 	const ix = new TransactionInstruction({
 		keys: [{ pubkey: greetedPubkey, isSigner: false, isWritable: true }],
 		programId,
 		data: Buffer.from([0]),
 	});
-	let client = ctx.banksClient;
+	const client = ctx.banksClient;
 	const payer = ctx.payer;
 	const blockhash = ctx.lastBlockhash;
 	const greetedAccountBefore = await client.getAccount(greetedPubkey);
@@ -111,7 +111,7 @@ test("many instructions", async () => {
 	expect(greetedAccountBefore?.data).toEqual(new Uint8Array([0, 0, 0, 0]));
 	const numIxs = 64;
 	const ixs = Array(numIxs).fill(ix);
-	let tx = new Transaction();
+	const tx = new Transaction();
 	tx.recentBlockhash = blockhash;
 	tx.add(...ixs);
 	tx.sign(payer);
@@ -122,8 +122,9 @@ test("many instructions", async () => {
 });
 
 test("add program via setAccount", async () => {
-	let [ctx, programId, greetedPubkey] = await helloworldProgramViaSetAccount();
-	let client = ctx.banksClient;
+	const [ctx, programId, greetedPubkey] =
+		await helloworldProgramViaSetAccount();
+	const client = ctx.banksClient;
 	const payer = ctx.payer;
 	const blockhash = ctx.lastBlockhash;
 	const greetedAccountBefore = await client.getAccount(greetedPubkey);
@@ -134,7 +135,7 @@ test("add program via setAccount", async () => {
 		programId,
 		data: Buffer.from([0]),
 	});
-	let tx = new Transaction();
+	const tx = new Transaction();
 	tx.recentBlockhash = blockhash;
 	tx.add(ix);
 	tx.sign(payer);
