@@ -1,6 +1,4 @@
-name: CI
-env:
-  APP_NAME: solana-bankrun
+name: lint
 on:
   push:
     branches: [main]

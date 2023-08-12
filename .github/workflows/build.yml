@@ -1,4 +1,4 @@
-name: CI
+name: build
 env:
   DEBUG: napi:*
   APP_NAME: solana-bankrun
