@@ -51,7 +51,7 @@
 		"lint:js": "rome check solana-bankrun/index.ts tests/ jest.config.ts tsconfig.json package.json",
 		"prepublishOnly": "napi prepublish -t npm",
 		"test": "RUST_LOG= jest --runInBand",
-		"tsc": "tsc",
+		"tsc": "tsc && cp solana-bankrun/internal.d.ts dist/internal.d.ts",
 		"universal": "napi universal",
 		"bumpPatch": "yarn version --patch && cargo bump patch && napi version && cargo check",
 		"bumpMinor": "yarn version --minor && cargo bump minor && napi version && cargo check",
