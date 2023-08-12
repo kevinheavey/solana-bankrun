@@ -4,7 +4,7 @@ import {compilerOptions} from "./tsconfig.json";
 export default {
   preset: "ts-jest",
   testEnvironment: "node",
-  moduleDirectories: ["node_modules", "./polars"],
+  moduleDirectories: ["node_modules", "./solana-bankrun"],
   moduleFileExtensions: ["js", "ts"],
   moduleNameMapper: pathsToModuleNameMapper(compilerOptions.paths, { prefix: "<rootDir>/solana-bankrun" }),
   testPathIgnorePatterns: ["<rootDir>/tests/util.ts"],
