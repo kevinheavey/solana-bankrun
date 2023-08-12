@@ -50,6 +50,8 @@
     "tsc": "tsc",
     "universal": "napi universal",
     "bumpPatch": "yarn version --patch && cargo bump patch && napi version",
+    "bumpMinor": "yarn version --minor && cargo bump minor && napi version",
+    "bumpMajor": "yarn version --major && cargo bump major && napi version",
     "docdev": "NODE_OPTIONS=--openssl-legacy-provider vuepress dev docs",
     "docbuild": "NODE_OPTIONS=--openssl-legacy-provider vuepress build docs"
   },
