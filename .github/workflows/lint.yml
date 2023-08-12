@@ -1,0 +1,34 @@
+name: CI
+env:
+  APP_NAME: solana-bankrun
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+    paths-ignore:
+      - '**/*.md'
+      - LICENSE
+      - '**/*.gitignore'
+      - .editorconfig
+      - docs/**
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Setup node
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
+          check-latest: true
+      - uses: hecrj/setup-rust-action@v1
+        with:
+          rust-version: 1.68.0
+          components: clippy
+      - name: Install dependencies
+        run: yarn install
+      - name: Lint rust
+        run: yarn lint:rust
+      - name: Lint JS
+        run: yarn lint:js
