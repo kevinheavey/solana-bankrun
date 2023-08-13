@@ -5,7 +5,7 @@ module.exports = {
     title: 'Bankrun',
     base: "/solana-bankrun/",
     head: [
-      ['link', { rel: 'icon', href: '/public/favicon.ico' }]
+      ['link', { rel: 'icon', href: '/public/favicon.ico', type: "image/x-icon" }]
     ],
     /**
      * Theme configuration, here is the default theme configuration for VuePress.
