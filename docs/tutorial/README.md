@@ -32,6 +32,8 @@ the name we used in the `programs` parameter.
 
 ## Anchor integration
 
+### Basic
+
 If you have an Anchor workspace, `bankrun` can make some extra assumptions that make it more
 convenient to get started. Just use `start_anchor` and give it the path to the project root
 (the folder containing the `Anchor.toml` file). The programs in the workspace will be automatically
@@ -40,6 +42,57 @@ deployed to the test environment.
 Example:
 
 <<< @/tests/anchor-example/anchor.test.ts
+
+### anchor-bankrun
+
+If you want deeper Anchor integration, you can install the [anchor-bankrun](https://www.npmjs.com/package/anchor-bankrun) package. This allows you to write typical Anchor tests with minimal changes using the `BankrunProvider`
+class. Here's an example that tests a program from the Anchor repository:
+
+```typescript
+import { startAnchor } from "solana-bankrun";
+import { BankrunProvider } from "anchor-bankrun";
+import { Keypair, PublicKey } from "@solana/web3.js";
+import { BN, Program } from "@coral-xyz/anchor";
+import { IDL as PuppetIDL, Puppet } from "./anchor-example/puppet";
+
+const PUPPET_PROGRAM_ID = new PublicKey(
+	"Fg6PaFpoGXkYsidMpWTK6W2BeZ7FEfcYkg476zPFsLnS",
+);
+
+test("anchor", async () => {
+	const context = await startAnchor("tests/anchor-example", [], []);
+
+	const provider = new BankrunProvider(context);
+
+	const puppetProgram = new Program<Puppet>(
+		PuppetIDL,
+		PUPPET_PROGRAM_ID,
+		provider,
+	);
+
+	const puppetKeypair = Keypair.generate();
+	await puppetProgram.methods
+		.initialize()
+		.accounts({
+			puppet: puppetKeypair.publicKey,
+		})
+		.signers([puppetKeypair])
+		.rpc();
+
+	const data = new BN(123456);
+	await puppetProgram.methods
+		.setData(data)
+		.accounts({
+			puppet: puppetKeypair.publicKey,
+		})
+		.rpc();
+
+	const dataAccount = await puppetProgram.account.data.fetch(
+		puppetKeypair.publicKey,
+	);
+	expect(dataAccount.data.eq(new BN(123456)));
+});
+```
 
 ## Time travel
 
