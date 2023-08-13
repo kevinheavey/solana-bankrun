@@ -32,6 +32,8 @@ Note: If you have multiple test files you should disable parallel tests using th
 There is an [open issue](https://github.com/kevinheavey/solana-bankrun/issues/2)
 where concurrent Jest tests occasionally fail due to the program name getting garbled.
 
+Note: The underlying Rust process may print a lot of logs. You can control these with the `RUST_LOG` environment variable. If you want to silence these logs your test command would look like `RUST_LOG= jest --runInBand`.
+
 
 ```ts
 import { start } from "solana-bankrun";
