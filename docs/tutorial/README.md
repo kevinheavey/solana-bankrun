@@ -141,5 +141,6 @@ much easier.
 
 ## Supported platforms
 
-`bankrun` is not included on `windows` and `musllinux-i686` targets, but otherwise
-should run on most popular platforms that can run NodeJS.
+`bankrun` is supported in Linux x64 and MacOS targets, because this is what
+`solana-program-test` runs on. If you find a platform that is not supported
+but which can run `solana-program-test`, please open an issue.
