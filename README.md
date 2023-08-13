@@ -72,7 +72,7 @@ Some things to note here:
   the System Program, the SPL token programs and the SPL memo program.
 
 
-## Installation:
+## Installation
 
 ```
 yarn add solana-bankrun
