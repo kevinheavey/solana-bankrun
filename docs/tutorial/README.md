@@ -141,6 +141,6 @@ much easier.
 
 ## Supported platforms
 
-`bankrun` is supported in Linux x64 and MacOS targets, because this is what
+`bankrun` is supported on Linux x64 and MacOS targets, because this is what
 `solana-program-test` runs on. If you find a platform that is not supported
 but which can run `solana-program-test`, please open an issue.
