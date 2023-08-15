@@ -122,6 +122,23 @@ If you want to set account data *after* calling `start()`,
 you can use `context.set_account()`.
 :::
 
+### Copying Accounts from a live environment
+
+If you don't want to initialize arbitray accounts manually you 
+can also copy the account's data easily from a live environment 
+and pass it to Bankrun.
+
+Here's a simple example that pulls account data from devnet
+and pass it to bankrun:
+
+<<< @/tests/copyAccounts.test.ts
+
+::: tip
+Just like with manually setting accounts you can also
+set the account data *after* calling `start()` using 
+`context.set_account()`.
+:::
+
 ## Other features
 
 Other things you can do with `bankrun` include:
