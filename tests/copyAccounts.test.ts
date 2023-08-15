@@ -6,8 +6,8 @@ test("copy accounts from devnet", async () => {
 	const usdcMint = new PublicKey(
 		"EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
 	);
-  const connection = new Connection("https://api.devnet.solana.com");
-  const accountInfo = await connection.getAccountInfo(usdcMint)
+  	const connection = new Connection("https://api.devnet.solana.com");
+  	const accountInfo = await connection.getAccountInfo(usdcMint)
   
 	const context = await start(
 		[],
