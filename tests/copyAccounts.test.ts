@@ -1,5 +1,5 @@
 import { start } from "solana-bankrun";
-import { PublicKey } from "@solana/web3.js";
+import { PublicKey, Connection } from "@solana/web3.js";
 
 test("copy accounts from devnet", async () => {
 	const owner = PublicKey.unique();
