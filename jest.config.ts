@@ -9,7 +9,8 @@ export default {
 	moduleNameMapper: pathsToModuleNameMapper(compilerOptions.paths, {
 		prefix: "<rootDir>/solana-bankrun",
 	}),
-	testPathIgnorePatterns: ["<rootDir>/tests/util.ts"],
+	// don't run copyAccounts tesst by default since devnet is flaky 
+	testPathIgnorePatterns: ["<rootDir>/tests/util.ts", "<rootDir>/tests/copyAccounts.test.ts"],
 	transform: {
 		"^.+\\.{ts|tsx}?$": [
 			"ts-jest",
