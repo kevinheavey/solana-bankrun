@@ -3,9 +3,7 @@
 	"version": "0.1.1",
 	"main": "dist/index.js",
 	"types": "dist/index.d.ts",
-	"files": [
-		"dist/"
-	],
+	"files": ["dist/"],
 	"napi": {
 		"name": "solana-bankrun",
 		"triples": {
@@ -48,7 +46,7 @@
 		"fmt": "yarn fmt:rust && yarn fmt:js",
 		"fmt:rust": "cargo fmt",
 		"fmt:js": "rome format --write solana-bankrun/index.ts tests/ jest.config.ts tsconfig.json package.json",
-		"lint": "yarn lint:rust && lint:js",
+		"lint": "yarn lint:rust && yarn lint:js",
 		"lint:rust": "cargo clippy",
 		"lint:js": "rome check solana-bankrun/index.ts tests/ jest.config.ts tsconfig.json package.json",
 		"prepublishOnly": "napi prepublish -t npm",

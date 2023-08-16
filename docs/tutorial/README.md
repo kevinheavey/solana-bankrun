@@ -122,6 +122,15 @@ If you want to set account data *after* calling `start()`,
 you can use `context.set_account()`.
 :::
 
+### Copying Accounts from a live environment
+
+If you want to copy accounts from mainnet or devnet, you can use the `solana account` command in the Solana CLI to save account data to a file.
+
+Or, if you want to pull live data every time you test, you can do this with a few lines of code. Here's a simple example that pulls account data from devnet
+and passes it to bankrun:
+
+<<< @/tests/copyAccounts.test.ts
+
 ## Other features
 
 Other things you can do with `bankrun` include:
