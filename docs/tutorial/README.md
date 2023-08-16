@@ -19,6 +19,10 @@ Firstly, the program's `.so` file must be present in one of the following direct
 (If you're not aware, the `.so` file is created when you run `anchor build` or `cargo build-sbf`
 and can be found in `target/deploy`).
 
+::: tip
+If you want to pull a Solana program from mainnet or devnet, use the `solana program dump` command from the Solana CLI.
+:::
+
 Now to add the program to our tests we use the `programs` parameter in the `start` function.
 The program name used in this parameter must match the filename without the `.so` extension.
 
