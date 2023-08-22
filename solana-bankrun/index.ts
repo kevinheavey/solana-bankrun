@@ -342,6 +342,14 @@ export class ProgramTestContext {
 	get lastBlockhash(): string {
 		return this.inner.lastBlockhash;
 	}
+	/** The first slot after the warmup period. */
+	get firstNormalSlot(): bigint {
+		return this.inner.firstNormalSlot;
+	}
+	/** The number of slots per epoch as set at genesis. */
+	get slotsPerEpoch(): bigint {
+		return this.inner.slotsPerEpoch;
+	}
 	/**
 	 * Create or overwrite an account, subverting normal runtime checks.
 	 *

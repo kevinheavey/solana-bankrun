@@ -96,6 +96,17 @@ test("warp", async () => {
 	expect(slot1).toBe(newSlot);
 });
 
+test("warp epoch", async () => {
+	const context = await start([], []);
+	const client = context.banksClient;
+	context.warpToSlot(context.firstNormalSlot);
+	const slotBefore = await client.getSlot();
+	const epochBefore = (await client.getClock()).epoch;
+	context.warpToSlot(slotBefore + context.slotsPerEpoch);
+	const epochAfter = (await client.getClock()).epoch;
+	expect(epochAfter).toBe(epochBefore + 1n);
+});
+
 test("many instructions", async () => {
 	const [ctx, programId, greetedPubkey] = await helloworldProgram();
 	const ix = new TransactionInstruction({

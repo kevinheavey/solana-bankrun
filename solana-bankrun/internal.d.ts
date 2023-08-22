@@ -158,6 +158,8 @@ export class ProgramTestContext {
   get banksClient(): BanksClient
   get payer(): Uint8Array
   get lastBlockhash(): string
+  get firstNormalSlot(): bigint
+  get slotsPerEpoch(): bigint
   setAccount(address: Uint8Array, account: Account): void
   setClock(clock: Clock): void
   setRent(rent: Rent): void

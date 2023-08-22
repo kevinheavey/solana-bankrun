@@ -715,6 +715,16 @@ impl ProgramTestContext {
         self.0.last_blockhash.to_string()
     }
 
+    #[napi(getter)]
+    pub fn first_normal_slot(&self) -> u64 {
+        self.0.genesis_config().epoch_schedule.first_normal_slot
+    }
+
+    #[napi(getter)]
+    pub fn slots_per_epoch(&self) -> u64 {
+        self.0.genesis_config().epoch_schedule.slots_per_epoch
+    }
+
     #[napi]
     pub fn set_account(&mut self, address: Uint8Array, account: &Account) {
         let acc_original: &AccountOriginal = account.as_ref();
