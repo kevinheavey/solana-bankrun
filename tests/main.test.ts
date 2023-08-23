@@ -4,6 +4,9 @@ import {
 	LAMPORTS_PER_SOL,
 	Transaction,
 	TransactionInstruction,
+	VersionedTransaction,
+	VersionedMessage,
+	MessageV0,
 } from "@solana/web3.js";
 import { helloworldProgram, helloworldProgramViaSetAccount } from "./util";
 
@@ -40,6 +43,29 @@ test("hello world", async () => {
 	expect(greetedAccountAfter?.data).toEqual(new Uint8Array([1, 0, 0, 0]));
 });
 
+test("versioned tx", async () => {
+	const [ctx, programId, greetedPubkey] = await helloworldProgram();
+	const client = ctx.banksClient;
+	const payer = ctx.payer;
+	const blockhash = ctx.lastBlockhash;
+	const ix = new TransactionInstruction({
+		keys: [{ pubkey: greetedPubkey, isSigner: false, isWritable: true }],
+		programId,
+		data: Buffer.from([0]),
+	});
+	const msg = MessageV0.compile({
+		payerKey: payer.publicKey,
+		instructions: [ix],
+		recentBlockhash: blockhash,
+	});
+	const tx = new VersionedTransaction(msg);
+	tx.sign([payer]);
+	await client.processTransaction(tx);
+	const greetedAccountAfter = await client.getAccount(greetedPubkey);
+	expect(greetedAccountAfter).not.toBeNull();
+	expect(greetedAccountAfter?.data).toEqual(new Uint8Array([1, 0, 0, 0]));
+});
+
 test("compute limit", async () => {
 	const [ctx, programId, greetedPubkey] = await helloworldProgram(10n);
 	const ix = new TransactionInstruction({
@@ -60,6 +86,45 @@ test("compute limit", async () => {
 	await expect(client.processTransaction(tx)).rejects.toThrow(
 		"Program failed to complete",
 	);
+});
+
+test("tryProcessLegacyTransaction", async () => {
+	const [ctx, programId, greetedPubkey] = await helloworldProgram(10n);
+	const ix = new TransactionInstruction({
+		keys: [{ pubkey: greetedPubkey, isSigner: false, isWritable: true }],
+		programId,
+		data: Buffer.from([0]),
+	});
+	const client = ctx.banksClient;
+	const payer = ctx.payer;
+	const blockhash = ctx.lastBlockhash;
+	const tx = new Transaction();
+	tx.recentBlockhash = blockhash;
+	tx.add(ix);
+	tx.sign(payer);
+	const res = await client.tryProcessTransaction(tx);
+	expect(res.result).toMatch("Program failed to complete");
+});
+
+test("tryProcessVersionedTransaction", async () => {
+	const [ctx, programId, greetedPubkey] = await helloworldProgram(10n);
+	const ix = new TransactionInstruction({
+		keys: [{ pubkey: greetedPubkey, isSigner: false, isWritable: true }],
+		programId,
+		data: Buffer.from([0]),
+	});
+	const client = ctx.banksClient;
+	const payer = ctx.payer;
+	const blockhash = ctx.lastBlockhash;
+	const msg = MessageV0.compile({
+		payerKey: payer.publicKey,
+		instructions: [ix],
+		recentBlockhash: blockhash,
+	});
+	const tx = new VersionedTransaction(msg);
+	tx.sign([payer]);
+	const res = await client.tryProcessTransaction(tx);
+	expect(res.result).toMatch("Program failed to complete");
 });
 
 test("non-existent account", async () => {
