@@ -56,7 +56,7 @@ test("versioned tx", async () => {
 	const msg = MessageV0.compile({
 		payerKey: payer.publicKey,
 		instructions: [ix],
-		recentBlockhash: blockhash
+		recentBlockhash: blockhash,
 	});
 	const tx = new VersionedTransaction(msg);
 	tx.sign([payer]);
@@ -119,7 +119,7 @@ test("tryProcessVersionedTransaction", async () => {
 	const msg = MessageV0.compile({
 		payerKey: payer.publicKey,
 		instructions: [ix],
-		recentBlockhash: blockhash
+		recentBlockhash: blockhash,
 	});
 	const tx = new VersionedTransaction(msg);
 	tx.sign([payer]);
