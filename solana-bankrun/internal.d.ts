@@ -47,6 +47,8 @@ export class BanksClient {
   sendVersionedTransaction(txBytes: Uint8Array): Promise<void>
   processLegacyTransaction(txBytes: Uint8Array): Promise<BanksTransactionMeta>
   processVersionedTransaction(txBytes: Uint8Array): Promise<BanksTransactionMeta>
+  tryProcessLegacyTransaction(txBytes: Uint8Array): Promise<BanksTransactionResultWithMeta>
+  tryProcessVersionedTransaction(txBytes: Uint8Array): Promise<BanksTransactionResultWithMeta>
   simulateLegacyTransaction(txBytes: Uint8Array, commitment?: CommitmentLevel | undefined | null): Promise<BanksTransactionResultWithMeta>
   simulateVersionedTransaction(txBytes: Uint8Array, commitment?: CommitmentLevel | undefined | null): Promise<BanksTransactionResultWithMeta>
   getTransactionStatus(signature: Uint8Array): Promise<TransactionStatus | null>

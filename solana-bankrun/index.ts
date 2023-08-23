@@ -183,6 +183,30 @@ export class BanksClient {
 	}
 
 	/**
+	 * Try to process a transaction and return the result with metadata. 
+	 * 
+	 * If the transaction errors, a JS error is not raised.
+	 * Instead the returned object's `result` field will contain an error message.
+	 * 
+	 * This makes it easier to process transactions that you expect to fail
+	 * and make assertions about things like log messages.
+	 * 
+	 * @param tx - The transaction to send.
+	 * @returns The transaction result and metadata.
+	 */
+	async tryProcessTransaction(
+		tx: Transaction | VersionedTransaction,
+	): Promise<BanksTransactionResultWithMeta> {
+		const serialized = tx.serialize();
+		const internal = this.inner;
+		const inner =
+			tx instanceof Transaction
+				? await internal.tryProcessLegacyTransaction(serialized)
+				: await internal.tryProcessVersionedTransaction(serialized);
+		return new BanksTransactionResultWithMeta(inner);
+	}
+
+	/**
 	 * Simulate a transaction at the given commitment level.
 	 * @param tx - The transaction to simulate.
 	 * @param commitment - The commitment to use.
@@ -198,13 +222,13 @@ export class BanksClient {
 		const inner =
 			tx instanceof Transaction
 				? await internal.simulateLegacyTransaction(
-						serialized,
-						commitmentConverted,
-				  )
+					serialized,
+					commitmentConverted,
+				)
 				: await internal.simulateVersionedTransaction(
-						serialized,
-						commitmentConverted,
-				  );
+					serialized,
+					commitmentConverted,
+				);
 		return new BanksTransactionResultWithMeta(inner);
 	}
 

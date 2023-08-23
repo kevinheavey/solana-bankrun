@@ -347,6 +347,32 @@ impl BanksClient {
     }
 
     #[napi]
+    pub async unsafe fn try_process_legacy_transaction(
+        &mut self,
+        tx_bytes: Uint8Array,
+    ) -> Result<BanksTransactionResultWithMeta> {
+        let tx: Transaction = deserialize(&tx_bytes).unwrap();
+        let res = self.0.process_transaction_with_metadata(tx).await;
+        match res {
+            Ok(r) => Ok(r.into()),
+            Err(e) => Err(to_js_error(e, "Failed to process transaction")),
+        }
+    }
+
+    #[napi]
+    pub async unsafe fn try_process_versioned_transaction(
+        &mut self,
+        tx_bytes: Uint8Array,
+    ) -> Result<BanksTransactionResultWithMeta> {
+        let tx: VersionedTransaction = deserialize(&tx_bytes).unwrap();
+        let res = self.0.process_transaction_with_metadata(tx).await;
+        match res {
+            Ok(r) => Ok(r.into()),
+            Err(e) => Err(to_js_error(e, "Failed to process transaction")),
+        }
+    }
+
+    #[napi]
     pub async unsafe fn simulate_legacy_transaction(
         &mut self,
         tx_bytes: Uint8Array,
