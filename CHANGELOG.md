@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.2.0] - Unreleased
+
+### Added
+
+- Add `tryProcessTransaction` for easier handling of transactions you expect to fail [(#9)](https://github.com/kevinheavey/solana-bankrun/pull/9)
+
 ## [0.1.1] - 2023-08-13
 
 ### Fixed
