@@ -1,6 +1,10 @@
 import {
 	Account,
 	BanksClient as BanksClientInner,
+	EpochSchedule,
+	FeeRateGovernor,
+	GenesisConfig as GenesisConfigInner,
+	PohConfig,
 	ProgramTestContext as ProgramTestContextInner,
 	start as startInner,
 	startAnchor as startAnchorInner,
@@ -12,7 +16,14 @@ import {
 	Clock,
 	CommitmentLevel,
 } from "./internal";
-export { TransactionStatus, Rent, Clock } from "./internal";
+export {
+	EpochSchedule,
+	TransactionStatus,
+	Rent,
+	Clock,
+	PohConfig,
+	FeeRateGovernor,
+} from "./internal";
 import {
 	AccountInfo,
 	Keypair,
@@ -23,6 +34,8 @@ import {
 	Message,
 	Commitment,
 	VersionedTransaction,
+	InflationGovernor,
+	Cluster,
 } from "@solana/web3.js";
 import bs58 from "bs58";
 
@@ -118,6 +131,59 @@ export class BanksTransactionResultWithMeta {
 		const inner = this.inner.meta;
 		if (!inner) return null;
 		return new BanksTransactionMeta(inner);
+	}
+}
+
+export type ClusterType = Cluster | "development";
+
+export class GenesisConfig {
+	constructor(inner: GenesisConfigInner) {
+		this.inner = inner;
+	}
+	private inner: GenesisConfigInner;
+	get creationTime(): number {
+		return this.inner.creationTime;
+	}
+	get accounts(): Map<PublicKey, AccountInfoBytes> {
+		return new Map(
+			this.inner.accounts.map((obj) => {
+				return [new PublicKey(obj.address), toAccountInfo(obj.account)];
+			}),
+		);
+	}
+	get nativeInstructionProcessors(): Array<[String, PublicKey]> {
+		return this.inner.nativeInstructionProcessors.map((obj) => [
+			obj.stringVal,
+			new PublicKey(obj.pubkeyVal),
+		]);
+	}
+	get rewardsPools(): Map<PublicKey, AccountInfoBytes> {
+		return new Map(
+			this.inner.rewardsPools.map((obj) => {
+				return [new PublicKey(obj.address), toAccountInfo(obj.account)];
+			}),
+		);
+	}
+	get ticksPerSlot(): bigint {
+		return this.inner.ticksPerSlot;
+	}
+	get pohConfig(): PohConfig {
+		return this.inner.pohConfig;
+	}
+	get feeRateGovernor(): FeeRateGovernor {
+		return this.inner.feeRateGovernor;
+	}
+	get rent(): Rent {
+		return this.inner.rent;
+	}
+	get inflation(): InflationGovernor {
+		return this.inner.inflation;
+	}
+	get epochSchedule(): EpochSchedule {
+		return this.inner.epochSchedule;
+	}
+	get clusterType(): ClusterType {
+		return this.inner.clusterType as ClusterType;
 	}
 }
 
@@ -365,6 +431,10 @@ export class ProgramTestContext {
 	/** The last blockhash registered when the client was initialized. */
 	get lastBlockhash(): string {
 		return this.inner.lastBlockhash;
+	}
+	/** The chain's genesis config. */
+	get genesisConfig(): GenesisConfig {
+		return new GenesisConfig(this.inner.genesisConfig);
 	}
 	/**
 	 * Create or overwrite an account, subverting normal runtime checks.

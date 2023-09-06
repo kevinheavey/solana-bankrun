@@ -252,7 +252,7 @@ if (!nativeBinding) {
   throw new Error(`Failed to load native binding`)
 }
 
-const { CommitmentLevel, Account, BlockhashRes, TransactionStatus, TransactionReturnData, BanksTransactionMeta, BanksTransactionResultWithMeta, BanksClient, Rent, Clock, ProgramTestContext, startAnchor, start } = nativeBinding
+const { CommitmentLevel, Account, BlockhashRes, TransactionStatus, TransactionReturnData, BanksTransactionMeta, BanksTransactionResultWithMeta, BanksClient, Rent, Clock, PohConfig, FeeRateGovernor, Inflation, EpochSchedule, AddressAndAccount, NativeInstructionProcessor, GenesisConfig, ProgramTestContext, startAnchor, start } = nativeBinding
 
 module.exports.CommitmentLevel = CommitmentLevel
 module.exports.Account = Account
@@ -264,6 +264,13 @@ module.exports.BanksTransactionResultWithMeta = BanksTransactionResultWithMeta
 module.exports.BanksClient = BanksClient
 module.exports.Rent = Rent
 module.exports.Clock = Clock
+module.exports.PohConfig = PohConfig
+module.exports.FeeRateGovernor = FeeRateGovernor
+module.exports.Inflation = Inflation
+module.exports.EpochSchedule = EpochSchedule
+module.exports.AddressAndAccount = AddressAndAccount
+module.exports.NativeInstructionProcessor = NativeInstructionProcessor
+module.exports.GenesisConfig = GenesisConfig
 module.exports.ProgramTestContext = ProgramTestContext
 module.exports.startAnchor = startAnchor
 module.exports.start = start

@@ -209,3 +209,15 @@ test("add program via setAccount", async () => {
 	expect(greetedAccountAfter).not.toBeNull();
 	expect(greetedAccountAfter?.data).toEqual(new Uint8Array([1, 0, 0, 0]));
 });
+
+test("warp epoch", async () => {
+	const context = await start([], []);
+	const client = context.banksClient;
+	const epochSchedule = context.genesisConfig.epochSchedule;
+	context.warpToSlot(epochSchedule.firstNormalSlot);
+	const slotBefore = await client.getSlot();
+	const epochBefore = (await client.getClock()).epoch;
+	context.warpToSlot(slotBefore + epochSchedule.slotsPerEpoch);
+	const epochAfter = (await client.getClock()).epoch;
+	expect(epochAfter).toBe(epochBefore + 1n);
+});

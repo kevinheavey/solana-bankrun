@@ -12,6 +12,8 @@ use solana_banks_interface::{
 };
 use solana_program::{
     clock::Clock as ClockOriginal,
+    epoch_schedule::EpochSchedule as EpochScheduleOriginal,
+    fee_calculator::FeeRateGovernor as FeeRateGovernorOriginal,
     message::Message,
     pubkey::Pubkey,
     rent::{Rent as RentOriginal, RentDue},
@@ -23,6 +25,9 @@ use solana_program_test::{
 use solana_sdk::{
     account::{Account as AccountOriginal, AccountSharedData},
     commitment_config::CommitmentLevel as CommitmentLevelOriginal,
+    genesis_config::{ClusterType, GenesisConfig as GenesisConfigOriginal},
+    inflation::Inflation as InflationOriginal,
+    poh_config::PohConfig as PohConfigOriginal,
     signature::Signature,
     transaction::{Transaction, TransactionError, VersionedTransaction},
     transaction_context::TransactionReturnData as TransactionReturnDataOriginal,
@@ -722,6 +727,218 @@ impl Clock {
 
 #[derive(From, Into)]
 #[napi]
+pub struct PohConfig(PohConfigOriginal);
+
+#[napi]
+impl PohConfig {
+    #[napi(getter)]
+    pub fn target_tick_duration(&self) -> u128 {
+        self.0.target_tick_duration.as_micros()
+    }
+    #[napi(getter)]
+    pub fn target_tick_count(&self) -> Option<u64> {
+        self.0.target_tick_count
+    }
+    #[napi(getter)]
+    pub fn hashes_per_tick(&self) -> Option<u64> {
+        self.0.hashes_per_tick
+    }
+}
+
+#[derive(From, Into)]
+#[napi]
+pub struct FeeRateGovernor(FeeRateGovernorOriginal);
+
+#[napi]
+impl FeeRateGovernor {
+    #[napi(getter)]
+    pub fn lamports_per_signature(&self) -> u64 {
+        self.0.lamports_per_signature
+    }
+    #[napi(getter)]
+    pub fn target_lamports_per_signature(&self) -> u64 {
+        self.0.target_lamports_per_signature
+    }
+    #[napi(getter)]
+    pub fn target_signatures_per_slot(&self) -> u64 {
+        self.0.target_signatures_per_slot
+    }
+    #[napi(getter)]
+    pub fn min_lamports_per_signature(&self) -> u64 {
+        self.0.min_lamports_per_signature
+    }
+    #[napi(getter)]
+    pub fn max_lamports_per_signature(&self) -> u64 {
+        self.0.max_lamports_per_signature
+    }
+    #[napi(getter)]
+    pub fn burn_percent(&self) -> u8 {
+        self.0.burn_percent
+    }
+}
+
+#[derive(From, Into)]
+#[napi]
+pub struct Inflation(InflationOriginal);
+
+#[napi]
+impl Inflation {
+    #[napi(getter)]
+    pub fn initial(&self) -> f64 {
+        self.0.initial
+    }
+    #[napi(getter)]
+    pub fn terminal(&self) -> f64 {
+        self.0.terminal
+    }
+    #[napi(getter)]
+    pub fn taper(&self) -> f64 {
+        self.0.taper
+    }
+    #[napi(getter)]
+    pub fn foundation(&self) -> f64 {
+        self.0.foundation
+    }
+    #[napi(getter)]
+    pub fn foundation_term(&self) -> f64 {
+        self.0.foundation_term
+    }
+}
+
+#[derive(From, Into)]
+#[napi]
+pub struct EpochSchedule(EpochScheduleOriginal);
+
+#[napi]
+impl EpochSchedule {
+    #[napi(getter)]
+    pub fn slots_per_epoch(&self) -> u64 {
+        self.0.slots_per_epoch
+    }
+    #[napi(getter)]
+    pub fn leader_schedule_slot_offset(&self) -> u64 {
+        self.0.leader_schedule_slot_offset
+    }
+    #[napi(getter)]
+    pub fn warmup(&self) -> bool {
+        self.0.warmup
+    }
+    #[napi(getter)]
+    pub fn first_normal_epoch(&self) -> u64 {
+        self.0.first_normal_epoch
+    }
+    #[napi(getter)]
+    pub fn first_normal_slot(&self) -> u64 {
+        self.0.first_normal_slot
+    }
+}
+
+#[derive(From, Into)]
+#[napi]
+pub struct AddressAndAccount {
+    pub address: Uint8Array,
+    account: Account,
+}
+
+#[napi]
+impl AddressAndAccount {
+    #[napi(getter)]
+    pub fn account(&self) -> Account {
+        self.account.clone()
+    }
+}
+
+#[derive(From, Into)]
+#[napi]
+pub struct NativeInstructionProcessor {
+    pub string_val: String,
+    pub pubkey_val: Uint8Array,
+}
+
+#[derive(From, Into)]
+#[napi]
+pub struct GenesisConfig(GenesisConfigOriginal);
+
+#[napi]
+impl GenesisConfig {
+    #[napi(getter)]
+    pub fn creation_time(&self) -> i64 {
+        self.0.creation_time
+    }
+    #[napi(getter)]
+    pub fn accounts(&self) -> Vec<AddressAndAccount> {
+        self.0
+            .accounts
+            .clone()
+            .into_iter()
+            .map(|(pk, acc)| AddressAndAccount {
+                address: Uint8Array::from(pk.to_bytes()),
+                account: Account::from(acc),
+            })
+            .collect()
+    }
+    #[napi(getter)]
+    pub fn native_instruction_processors(&self) -> Vec<NativeInstructionProcessor> {
+        self.0
+            .native_instruction_processors
+            .clone()
+            .into_iter()
+            .map(|tup| NativeInstructionProcessor {
+                string_val: tup.0,
+                pubkey_val: Uint8Array::from(tup.1.to_bytes()),
+            })
+            .collect()
+    }
+    #[napi(getter)]
+    pub fn rewards_pools(&self) -> Vec<AddressAndAccount> {
+        self.0
+            .rewards_pools
+            .clone()
+            .into_iter()
+            .map(|(pk, acc)| AddressAndAccount {
+                address: Uint8Array::from(pk.to_bytes()),
+                account: Account::from(acc),
+            })
+            .collect()
+    }
+    #[napi(getter)]
+    pub fn ticks_per_slot(&self) -> u64 {
+        self.0.ticks_per_slot.into()
+    }
+    #[napi(getter)]
+    pub fn poh_config(&self) -> PohConfig {
+        self.0.poh_config.clone().into()
+    }
+    #[napi(getter)]
+    pub fn fee_rate_governor(&self) -> FeeRateGovernor {
+        self.0.fee_rate_governor.clone().into()
+    }
+    #[napi(getter)]
+    pub fn rent(&self) -> Rent {
+        self.0.rent.into()
+    }
+    #[napi(getter)]
+    pub fn inflation(&self) -> Inflation {
+        self.0.inflation.into()
+    }
+    #[napi(getter)]
+    pub fn epoch_schedule(&self) -> EpochSchedule {
+        self.0.epoch_schedule.into()
+    }
+    #[napi(getter)]
+    pub fn cluster_type(&self) -> String {
+        match self.0.cluster_type {
+            ClusterType::Development => "development",
+            ClusterType::Devnet => "devnet",
+            ClusterType::MainnetBeta => "mainnet-beta",
+            ClusterType::Testnet => "testnet",
+        }
+        .to_string()
+    }
+}
+
+#[derive(From, Into)]
+#[napi]
 pub struct ProgramTestContext(ProgramTestContextOriginal);
 
 #[napi]
@@ -739,6 +956,11 @@ impl ProgramTestContext {
     #[napi(getter)]
     pub fn last_blockhash(&self) -> String {
         self.0.last_blockhash.to_string()
+    }
+
+    #[napi(getter)]
+    pub fn genesis_config(&self) -> GenesisConfig {
+        self.0.genesis_config().clone().into()
     }
 
     #[napi]
