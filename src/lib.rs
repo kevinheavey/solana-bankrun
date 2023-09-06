@@ -1,6 +1,6 @@
 #![allow(clippy::missing_safety_doc)]
+use std::path::PathBuf;
 use std::str::FromStr;
-use std::{collections::HashMap, path::PathBuf};
 
 use bincode::deserialize;
 use derive_more::{From, Into};
@@ -836,15 +836,23 @@ impl EpochSchedule {
 #[derive(From, Into)]
 #[napi]
 pub struct AddressAndAccount {
-    address: Uint8Array,
+    pub address: Uint8Array,
     account: Account,
+}
+
+#[napi]
+impl AddressAndAccount {
+    #[napi(getter)]
+    pub fn account(&self) -> Account {
+        self.account.clone()
+    }
 }
 
 #[derive(From, Into)]
 #[napi]
 pub struct NativeInstructionProcessor {
-    string_val: String,
-    pubkey_val: Uint8Array,
+    pub string_val: String,
+    pub pubkey_val: Uint8Array,
 }
 
 #[derive(From, Into)]

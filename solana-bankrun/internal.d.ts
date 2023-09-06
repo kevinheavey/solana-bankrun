@@ -183,11 +183,16 @@ export class EpochSchedule {
   get firstNormalEpoch(): bigint
   get firstNormalSlot(): bigint
 }
-export class AddressAndAccount { }
-export class NativeInstructionProcessor { }
+export class AddressAndAccount {
+  address: Uint8Array
+  get account(): Account
+}
+export class NativeInstructionProcessor {
+  stringVal: string
+  pubkeyVal: Uint8Array
+}
 export class GenesisConfig {
   get creationTime(): number
-  get foo(): Record<string, Account>
   get accounts(): Array<AddressAndAccount>
   get nativeInstructionProcessors(): Array<NativeInstructionProcessor>
   get rewardsPools(): Array<AddressAndAccount>
