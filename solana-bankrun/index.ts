@@ -15,7 +15,13 @@ import {
 	Clock,
 	CommitmentLevel,
 } from "./internal";
-export { TransactionStatus, Rent, Clock, PohConfig, FeeRateGovernor } from "./internal";
+export {
+	TransactionStatus,
+	Rent,
+	Clock,
+	PohConfig,
+	FeeRateGovernor,
+} from "./internal";
 import {
 	AccountInfo,
 	Keypair,
@@ -128,7 +134,7 @@ export class BanksTransactionResultWithMeta {
 	}
 }
 
-export type ClusterType = Cluster | 'development';
+export type ClusterType = Cluster | "development";
 
 export class GenesisConfig {
 	constructor(inner: GenesisConfigInner) {
@@ -136,46 +142,55 @@ export class GenesisConfig {
 	}
 	private inner: GenesisConfigInner;
 	get creationTime(): number {
-		return this.inner.creationTime
+		return this.inner.creationTime;
 	}
 	get accounts(): Map<PublicKey, AccountInfoBytes> {
 		return new Map(
-			this.inner.accounts.map(obj => {
+			this.inner.accounts.map((obj) => {
 				return [new PublicKey(obj.address), toAccountInfo(obj.account)];
 			}),
-		)
+		);
 	}
 	get nativeInstructionProcessors(): Array<[String, PublicKey]> {
-		return this.inner.nativeInstructionProcessors.map(obj => [obj.stringVal, new PublicKey(obj.pubkeyVal)])
+		return this.inner.nativeInstructionProcessors.map((obj) => [
+			obj.stringVal,
+			new PublicKey(obj.pubkeyVal),
+		]);
 	}
 	get rewardsPools(): Map<PublicKey, AccountInfoBytes> {
 		return new Map(
-			this.inner.rewardsPools.map(obj => {
+			this.inner.rewardsPools.map((obj) => {
 				return [new PublicKey(obj.address), toAccountInfo(obj.account)];
 			}),
-		)
+		);
 	}
 	get ticksPerSlot(): bigint {
-		return this.inner.ticksPerSlot
+		return this.inner.ticksPerSlot;
 	}
 	get pohConfig(): PohConfig {
-		return this.inner.pohConfig
+		return this.inner.pohConfig;
 	}
 	get feeRateGovernor(): FeeRateGovernor {
-		return this.inner.feeRateGovernor
+		return this.inner.feeRateGovernor;
 	}
 	get rent(): Rent {
-		return this.inner.rent
+		return this.inner.rent;
 	}
 	get inflation(): InflationGovernor {
-		return this.inner.inflation
+		return this.inner.inflation;
 	}
 	get epochSchedule(): EpochSchedule {
 		const inner = this.inner.epochSchedule;
-		return new EpochSchedule(Number(inner.slotsPerEpoch), Number(inner.leaderScheduleSlotOffset), inner.warmup, Number(inner.firstNormalEpoch), Number(inner.firstNormalSlot))
+		return new EpochSchedule(
+			Number(inner.slotsPerEpoch),
+			Number(inner.leaderScheduleSlotOffset),
+			inner.warmup,
+			Number(inner.firstNormalEpoch),
+			Number(inner.firstNormalSlot),
+		);
 	}
 	get clusterType(): ClusterType {
-		return this.inner.clusterType as ClusterType
+		return this.inner.clusterType as ClusterType;
 	}
 }
 
@@ -280,13 +295,13 @@ export class BanksClient {
 		const inner =
 			tx instanceof Transaction
 				? await internal.simulateLegacyTransaction(
-					serialized,
-					commitmentConverted,
-				)
+						serialized,
+						commitmentConverted,
+				  )
 				: await internal.simulateVersionedTransaction(
-					serialized,
-					commitmentConverted,
-				);
+						serialized,
+						commitmentConverted,
+				  );
 		return new BanksTransactionResultWithMeta(inner);
 	}
 
@@ -426,7 +441,7 @@ export class ProgramTestContext {
 	}
 	/** The chain's genesis config. */
 	get genesisConfig(): GenesisConfig {
-		return new GenesisConfig(this.inner.genesisConfig)
+		return new GenesisConfig(this.inner.genesisConfig);
 	}
 	/**
 	 * Create or overwrite an account, subverting normal runtime checks.
