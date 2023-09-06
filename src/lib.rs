@@ -858,12 +858,6 @@ impl GenesisConfig {
         self.0.creation_time
     }
     #[napi(getter)]
-    pub fn foo(&self) -> HashMap<String, Account> {
-        let mut h = HashMap::new();
-        h.insert("hi".to_string(), Account(AccountOriginal::default()));
-        h
-    }
-    #[napi(getter)]
     pub fn accounts(&self) -> Vec<AddressAndAccount> {
         self.0
             .accounts
