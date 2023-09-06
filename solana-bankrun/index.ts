@@ -1,6 +1,7 @@
 import {
 	Account,
 	BanksClient as BanksClientInner,
+	EpochSchedule,
 	FeeRateGovernor,
 	GenesisConfig as GenesisConfigInner,
 	PohConfig,
@@ -16,6 +17,7 @@ import {
 	CommitmentLevel,
 } from "./internal";
 export {
+	EpochSchedule,
 	TransactionStatus,
 	Rent,
 	Clock,
@@ -33,8 +35,6 @@ import {
 	Commitment,
 	VersionedTransaction,
 	InflationGovernor,
-	EpochInfo,
-	EpochSchedule,
 	Cluster,
 } from "@solana/web3.js";
 import bs58 from "bs58";
@@ -180,14 +180,7 @@ export class GenesisConfig {
 		return this.inner.inflation;
 	}
 	get epochSchedule(): EpochSchedule {
-		const inner = this.inner.epochSchedule;
-		return new EpochSchedule(
-			Number(inner.slotsPerEpoch),
-			Number(inner.leaderScheduleSlotOffset),
-			inner.warmup,
-			Number(inner.firstNormalEpoch),
-			Number(inner.firstNormalSlot),
-		);
+		return this.inner.epochSchedule;
 	}
 	get clusterType(): ClusterType {
 		return this.inner.clusterType as ClusterType;
