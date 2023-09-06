@@ -903,7 +903,7 @@ impl GenesisConfig {
     }
     #[napi(getter)]
     pub fn ticks_per_slot(&self) -> u64 {
-        self.0.ticks_per_slot.clone().into()
+        self.0.ticks_per_slot.into()
     }
     #[napi(getter)]
     pub fn poh_config(&self) -> PohConfig {
@@ -915,15 +915,15 @@ impl GenesisConfig {
     }
     #[napi(getter)]
     pub fn rent(&self) -> Rent {
-        self.0.rent.clone().into()
+        self.0.rent.into()
     }
     #[napi(getter)]
     pub fn inflation(&self) -> Inflation {
-        self.0.inflation.clone().into()
+        self.0.inflation.into()
     }
     #[napi(getter)]
     pub fn epoch_schedule(&self) -> EpochSchedule {
-        self.0.epoch_schedule.clone().into()
+        self.0.epoch_schedule.into()
     }
     #[napi(getter)]
     pub fn cluster_type(&self) -> String {
