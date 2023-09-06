@@ -210,7 +210,6 @@ test("add program via setAccount", async () => {
 	expect(greetedAccountAfter?.data).toEqual(new Uint8Array([1, 0, 0, 0]));
 });
 
-
 test("warp epoch", async () => {
 	const context = await start([], []);
 	const client = context.banksClient;
