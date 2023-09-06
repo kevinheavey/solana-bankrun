@@ -197,7 +197,6 @@ export class GenesisConfig {
   get nativeInstructionProcessors(): Array<NativeInstructionProcessor>
   get rewardsPools(): Array<AddressAndAccount>
   get ticksPerSlot(): bigint
-  get unused(): bigint
   get pohConfig(): PohConfig
   get feeRateGovernor(): FeeRateGovernor
   get rent(): Rent

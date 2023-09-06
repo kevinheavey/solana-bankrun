@@ -906,10 +906,6 @@ impl GenesisConfig {
         self.0.ticks_per_slot.clone().into()
     }
     #[napi(getter)]
-    pub fn unused(&self) -> u64 {
-        self.0.unused.clone().into()
-    }
-    #[napi(getter)]
     pub fn poh_config(&self) -> PohConfig {
         self.0.poh_config.clone().into()
     }
