@@ -156,10 +156,55 @@ export class Clock {
   /** The approximate real world time of the current slot. */
   get unixTimestamp(): bigint
 }
+export class PohConfig {
+  get targetTickDuration(): bigint
+  get targetTickCount(): bigint | null
+  get hashesPerTick(): bigint | null
+}
+export class FeeRateGovernor {
+  get lamportsPerSignature(): bigint
+  get targetLamportsPerSignature(): bigint
+  get targetSignaturesPerSlot(): bigint
+  get minLamportsPerSignature(): bigint
+  get maxLamportsPerSignature(): bigint
+  get burnPercent(): number
+}
+export class Inflation {
+  get initial(): number
+  get terminal(): number
+  get taper(): number
+  get foundation(): number
+  get foundationTerm(): number
+}
+export class EpochSchedule {
+  get slotsPerEpoch(): bigint
+  get leaderScheduleSlotOffset(): bigint
+  get warmup(): boolean
+  get firstNormalEpoch(): bigint
+  get firstNormalSlot(): bigint
+}
+export class AddressAndAccount { }
+export class NativeInstructionProcessor { }
+export class GenesisConfig {
+  get creationTime(): number
+  get foo(): Record<string, Account>
+  get accounts(): Array<AddressAndAccount>
+  get nativeInstructionProcessors(): Array<NativeInstructionProcessor>
+  get rewardsPools(): Array<AddressAndAccount>
+  get ticksPerSlot(): bigint
+  get unused(): bigint
+  get pohConfig(): PohConfig
+  get feeRateGovernor(): FeeRateGovernor
+  get rent(): Rent
+  get inflation(): Inflation
+  get epochSchedule(): EpochSchedule
+  get clusterType(): string
+}
 export class ProgramTestContext {
   get banksClient(): BanksClient
   get payer(): Uint8Array
   get lastBlockhash(): string
+  get genesisConfig(): GenesisConfig
   setAccount(address: Uint8Array, account: Account): void
   setClock(clock: Clock): void
   setRent(rent: Rent): void
