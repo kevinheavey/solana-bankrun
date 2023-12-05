@@ -36,6 +36,7 @@ import {
 	VersionedTransaction,
 	InflationGovernor,
 	Cluster,
+	SerializeConfig,
 } from "@solana/web3.js";
 import bs58 from "bs58";
 
@@ -220,9 +221,13 @@ export class BanksClient {
 	/**
 	 * Send a transaction and return immediately.
 	 * @param tx - The transaction to send.
+	 * @param serializeConfig - The transaction serialization config.
 	 */
-	async sendTransaction(tx: Transaction | VersionedTransaction) {
-		const serialized = tx.serialize();
+	async sendTransaction(
+		tx: Transaction | VersionedTransaction,
+		serializeConfig?: SerializeConfig,
+	) {
+		const serialized = tx.serialize(serializeConfig);
 		const internal = this.inner;
 		const method =
 			tx instanceof Transaction
@@ -234,12 +239,14 @@ export class BanksClient {
 	/**
 	 * Process a transaction and return the result with metadata.
 	 * @param tx - The transaction to send.
+	 * @param serializeConfig - The transaction serialization config.
 	 * @returns The transaction result and metadata.
 	 */
 	async processTransaction(
 		tx: Transaction | VersionedTransaction,
+		serializeConfig?: SerializeConfig,
 	): Promise<BanksTransactionMeta> {
-		const serialized = tx.serialize();
+		const serialized = tx.serialize(serializeConfig);
 		const internal = this.inner;
 		const inner =
 			tx instanceof Transaction
@@ -258,12 +265,14 @@ export class BanksClient {
 	 * and make assertions about things like log messages.
 	 *
 	 * @param tx - The transaction to send.
+	 * @param serializeConfig - The transaction serialization config.
 	 * @returns The transaction result and metadata.
 	 */
 	async tryProcessTransaction(
 		tx: Transaction | VersionedTransaction,
+		serializeConfig?: SerializeConfig,
 	): Promise<BanksTransactionResultWithMeta> {
-		const serialized = tx.serialize();
+		const serialized = tx.serialize(serializeConfig);
 		const internal = this.inner;
 		const inner =
 			tx instanceof Transaction
@@ -276,14 +285,16 @@ export class BanksClient {
 	 * Simulate a transaction at the given commitment level.
 	 * @param tx - The transaction to simulate.
 	 * @param commitment - The commitment to use.
+	 * @param serializeConfig - The transaction serialization config.
 	 * @returns The transaction simulation result.
 	 */
 	async simulateTransaction(
 		tx: Transaction | VersionedTransaction,
 		commitment?: Commitment,
+		serializeConfig?: SerializeConfig,
 	): Promise<BanksTransactionResultWithMeta> {
 		const internal = this.inner;
-		const serialized = tx.serialize();
+		const serialized = tx.serialize(serializeConfig);
 		const commitmentConverted = convertCommitment(commitment);
 		const inner =
 			tx instanceof Transaction
