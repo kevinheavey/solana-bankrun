@@ -471,6 +471,13 @@ export class ProgramTestContext {
 	warpToSlot(slot: bigint) {
 		this.inner.warpToSlot(slot);
 	}
+	/**
+	 * Force the working bank ahead to a new epoch.
+	 * @param epoch - The epoch to warp to.
+	 */
+	warpToEpoch(epoch: bigint) {
+		this.inner.warpToEpoch(epoch);
+	}
 }
 
 export interface AddedProgram {
