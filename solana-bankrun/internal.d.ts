@@ -213,4 +213,5 @@ export class ProgramTestContext {
   setClock(clock: Clock): void
   setRent(rent: Rent): void
   warpToSlot(warpSlot: bigint): void
+  warpToEpoch(warpEpoch: bigint): void
 }
