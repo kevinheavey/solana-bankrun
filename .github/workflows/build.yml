@@ -59,6 +59,8 @@ jobs:
           node-version: 18
           check-latest: true
           cache: yarn
+      - name: upgrade yarn
+        run: npm install yarn -g yarn@3.5.1
       - name: Install
         uses: dtolnay/rust-toolchain@stable
         if: ${{ !matrix.settings.docker }}
