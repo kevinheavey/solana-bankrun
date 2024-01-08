@@ -271,7 +271,9 @@ export class BanksClient {
 		const internal = this.inner;
 		const inner =
 			tx instanceof Transaction
-				? await internal.tryProcessLegacyTransaction(tx.serialize(serializeConfig))
+				? await internal.tryProcessLegacyTransaction(
+						tx.serialize(serializeConfig),
+				  )
 				: await internal.tryProcessVersionedTransaction(tx.serialize());
 		return new BanksTransactionResultWithMeta(inner);
 	}
