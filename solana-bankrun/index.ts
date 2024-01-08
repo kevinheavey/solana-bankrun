@@ -221,37 +221,33 @@ export class BanksClient {
 	/**
 	 * Send a transaction and return immediately.
 	 * @param tx - The transaction to send.
-	 * @param serializeConfig - The transaction serialization config.
+	 * @param serializeConfig - The transaction serialization config. For legacy transactions only.
 	 */
 	async sendTransaction(
 		tx: Transaction | VersionedTransaction,
 		serializeConfig?: SerializeConfig,
 	) {
-		const serialized = tx.serialize(serializeConfig);
 		const internal = this.inner;
-		const method =
-			tx instanceof Transaction
-				? internal.sendLegacyTransaction
-				: internal.sendVersionedTransaction;
-		await method(serialized);
+		tx instanceof Transaction
+			? await internal.sendLegacyTransaction(tx.serialize(serializeConfig))
+			: await internal.sendVersionedTransaction(tx.serialize());
 	}
 
 	/**
 	 * Process a transaction and return the result with metadata.
 	 * @param tx - The transaction to send.
-	 * @param serializeConfig - The transaction serialization config.
+	 * @param serializeConfig - The transaction serialization config. For legacy transactions only.
 	 * @returns The transaction result and metadata.
 	 */
 	async processTransaction(
 		tx: Transaction | VersionedTransaction,
 		serializeConfig?: SerializeConfig,
 	): Promise<BanksTransactionMeta> {
-		const serialized = tx.serialize(serializeConfig);
 		const internal = this.inner;
 		const inner =
 			tx instanceof Transaction
-				? await internal.processLegacyTransaction(serialized)
-				: await internal.processVersionedTransaction(serialized);
+				? await internal.processLegacyTransaction(tx.serialize(serializeConfig))
+				: await internal.processVersionedTransaction(tx.serialize());
 		return new BanksTransactionMeta(inner);
 	}
 
@@ -265,19 +261,18 @@ export class BanksClient {
 	 * and make assertions about things like log messages.
 	 *
 	 * @param tx - The transaction to send.
-	 * @param serializeConfig - The transaction serialization config.
+	 * @param serializeConfig - The transaction serialization config. For legacy transactions only.
 	 * @returns The transaction result and metadata.
 	 */
 	async tryProcessTransaction(
 		tx: Transaction | VersionedTransaction,
 		serializeConfig?: SerializeConfig,
 	): Promise<BanksTransactionResultWithMeta> {
-		const serialized = tx.serialize(serializeConfig);
 		const internal = this.inner;
 		const inner =
 			tx instanceof Transaction
-				? await internal.tryProcessLegacyTransaction(serialized)
-				: await internal.tryProcessVersionedTransaction(serialized);
+				? await internal.tryProcessLegacyTransaction(tx.serialize(serializeConfig))
+				: await internal.tryProcessVersionedTransaction(tx.serialize());
 		return new BanksTransactionResultWithMeta(inner);
 	}
 
@@ -285,7 +280,7 @@ export class BanksClient {
 	 * Simulate a transaction at the given commitment level.
 	 * @param tx - The transaction to simulate.
 	 * @param commitment - The commitment to use.
-	 * @param serializeConfig - The transaction serialization config.
+	 * @param serializeConfig - The transaction serialization config. For legacy transactions only.
 	 * @returns The transaction simulation result.
 	 */
 	async simulateTransaction(
@@ -294,16 +289,15 @@ export class BanksClient {
 		serializeConfig?: SerializeConfig,
 	): Promise<BanksTransactionResultWithMeta> {
 		const internal = this.inner;
-		const serialized = tx.serialize(serializeConfig);
 		const commitmentConverted = convertCommitment(commitment);
 		const inner =
 			tx instanceof Transaction
 				? await internal.simulateLegacyTransaction(
-						serialized,
+						tx.serialize(serializeConfig),
 						commitmentConverted,
 				  )
 				: await internal.simulateVersionedTransaction(
-						serialized,
+						tx.serialize(),
 						commitmentConverted,
 				  );
 		return new BanksTransactionResultWithMeta(inner);
