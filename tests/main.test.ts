@@ -5,7 +5,6 @@ import {
 	Transaction,
 	TransactionInstruction,
 	VersionedTransaction,
-	VersionedMessage,
 	MessageV0,
 } from "@solana/web3.js";
 import { helloworldProgram, helloworldProgramViaSetAccount } from "./util";
