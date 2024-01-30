@@ -915,7 +915,7 @@ impl GenesisConfig {
     }
     #[napi(getter)]
     pub fn rent(&self) -> Rent {
-        self.0.rent.into()
+        self.0.rent.clone().into()
     }
     #[napi(getter)]
     pub fn inflation(&self) -> Inflation {
@@ -923,7 +923,7 @@ impl GenesisConfig {
     }
     #[napi(getter)]
     pub fn epoch_schedule(&self) -> EpochSchedule {
-        self.0.epoch_schedule.into()
+        self.0.epoch_schedule.clone().into()
     }
     #[napi(getter)]
     pub fn cluster_type(&self) -> String {
@@ -992,11 +992,10 @@ impl ProgramTestContext {
 
     #[napi]
     pub fn warp_to_epoch(&mut self, warp_epoch: BigInt) -> Result<()> {
-        let epoch_slot = self.0.genesis_config().epoch_schedule.get_first_slot_in_epoch(warp_epoch.get_u64().1);
-        self.0.warp_to_slot(epoch_slot).map_err(|e| {
+        self.0.warp_to_epoch(warp_epoch.get_u64().1).map_err(|e| {
             Error::new(
                 Status::GenericFailure,
-                format!("Failed to warp to epoch {:?}, slot: {:?}: {e}", warp_epoch, epoch_slot),
+                format!("Failed to warp to slot {:?}: {e}", warp_epoch),
             )
         })
     }

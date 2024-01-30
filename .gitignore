@@ -4,6 +4,6 @@ target/
 .temp
 .cache
 dist/
-.yarn/cache/
-.yarn/install-state.gz
-.idea/
+
+.idea
+.yarn
