@@ -34,7 +34,7 @@
 		"ts-node": "^10.9.1",
 		"typedoc": "^0.24.0",
 		"typedoc-plugin-markdown": "^3.15.3",
-		"typescript": "^5.0.4",
+		"typescript": "5.0.4",
 		"vuepress": "^1.9.9",
 		"vuepress-plugin-typedoc": "^0.12.1"
 	},
