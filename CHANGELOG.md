@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.3.0] 2024-03-16
+
+### Added
+
+- Add `warp_to_epoch` method [(#18)](https://github.com/kevinheavey/solana-bankrun/pull/18)
+
 ## [0.2.0] - 2023-09-07
 
 ### Added
