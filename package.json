@@ -59,7 +59,7 @@
 		"bumpMinor": "yarn version --no-git-tag-version --minor && cargo bump minor && napi version && cargo check",
 		"bumpMajor": "yarn version --no-git-tag-version --major && cargo bump major && napi version && cargo check",
 		"docs:dev": "NODE_OPTIONS=--openssl-legacy-provider vuepress dev docs",
-		"docs:build": "NODE_OPTIONS=--openssl-legacy-provider vuepress build docs"
+		"docs:build": "NODE_OPTIONS=--openssl-legacy-provider tsc -V && vuepress build docs"
 	},
 	"dependencies": {
 		"@solana/web3.js": "^1.68.0",
