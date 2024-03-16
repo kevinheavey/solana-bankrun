@@ -903,7 +903,7 @@ impl GenesisConfig {
     }
     #[napi(getter)]
     pub fn ticks_per_slot(&self) -> u64 {
-        self.0.ticks_per_slot.into()
+        self.0.ticks_per_slot
     }
     #[napi(getter)]
     pub fn poh_config(&self) -> PohConfig {
