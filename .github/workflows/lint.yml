@@ -25,7 +25,7 @@ jobs:
           rust-version: 1.68.0
           components: clippy
       - name: Install dependencies
-        run: yarn install
+        run: corepack enable && yarn install
       - name: Lint rust
         run: yarn lint:rust
       - name: Lint JS

@@ -16,7 +16,7 @@ jobs:
           check-latest: true
           cache: yarn
       - name: Install dependencies
-        run: yarn install
+        run: corepack enable && yarn install
       - name: Download all artifacts
         uses: dawidd6/action-download-artifact@v2
         with:

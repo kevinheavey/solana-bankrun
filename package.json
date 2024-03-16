@@ -61,7 +61,6 @@
 		"docs:dev": "NODE_OPTIONS=--openssl-legacy-provider vuepress dev docs",
 		"docs:build": "NODE_OPTIONS=--openssl-legacy-provider vuepress build docs"
 	},
-	"packageManager": "yarn@3.5.1",
 	"dependencies": {
 		"@solana/web3.js": "^1.68.0",
 		"bs58": "^4.0.1"
