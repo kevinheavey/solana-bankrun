@@ -26,7 +26,7 @@ jobs:
       fail-fast: false
       matrix:
         settings:
-          - host: macos-latest
+          - host: macos-13
             target: x86_64-apple-darwin
             build: |
               yarn build
@@ -42,7 +42,7 @@ jobs:
             target: x86_64-unknown-linux-musl
             docker: ghcr.io/napi-rs/napi-rs/nodejs-rust@sha256:10573060f07edd964f5de04a92d19f8228b396310a5c9c0df23ef69b1f566ab9
             build: set -e && yarn build && strip solana-bankrun/*.node
-          - host: macos-latest
+          - host: macos-13
             target: aarch64-apple-darwin
             build: |
               rustup target add aarch64-apple-darwin &&
@@ -106,7 +106,6 @@ jobs:
       fail-fast: false
       matrix:
         node:
-          - '16'
           - '18'
     runs-on: ubuntu-latest
     steps:
@@ -137,7 +136,6 @@ jobs:
       fail-fast: false
       matrix:
         node:
-          - '16'
           - '18'
     runs-on: ubuntu-latest
     steps:
@@ -166,7 +164,7 @@ jobs:
     name: Build universal macOS binary
     needs:
       - build
-    runs-on: macos-latest
+    runs-on: macos-13
     steps:
       - uses: actions/checkout@v3
       - name: Setup node
