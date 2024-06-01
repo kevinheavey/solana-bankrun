@@ -224,11 +224,11 @@ export class BanksClient {
 	async sendTransaction(tx: Transaction | VersionedTransaction) {
 		const serialized = tx.serialize();
 		const internal = this.inner;
-		const method =
-			tx instanceof Transaction
-				? internal.sendLegacyTransaction
-				: internal.sendVersionedTransaction;
-		await method(serialized);
+		if (tx instanceof Transaction) {
+			await internal.sendLegacyTransaction(serialized);
+		} else {
+			await internal.sendVersionedTransaction(serialized);
+		}
 	}
 
 	/**
