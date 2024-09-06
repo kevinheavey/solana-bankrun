@@ -1006,6 +1006,7 @@ fn new_bankrun(
     compute_max_units: Option<u64>,
     transaction_account_lock_limit: Option<usize>,
     accounts: Vec<(Pubkey, Account)>,
+    deactivate_features: Vec<Pubkey>,
 ) -> ProgramTest {
     let mut pt = ProgramTest::default();
     pt.prefer_bpf(true);
@@ -1021,6 +1022,9 @@ fn new_bankrun(
     for acc in accounts {
         pt.add_account(acc.0, acc.1.into());
     }
+    for deactivate_feature in deactivate_features {
+        pt.deactivate_feature(deactivate_feature);
+    }
     pt
 }
 
@@ -1031,6 +1035,7 @@ pub async fn start_anchor(
     accounts: Vec<(Uint8Array, &Account)>,
     compute_max_units: Option<BigInt>,
     transaction_account_lock_limit: Option<BigInt>,
+    deactivate_features: Option<Vec<Uint8Array>>,
 ) -> Result<ProgramTestContext> {
     let mut programs: Vec<(&str, Pubkey)> = extra_programs
         .iter()
@@ -1074,11 +1079,25 @@ pub async fn start_anchor(
         .iter()
         .map(|tup| (Pubkey::try_from(tup.0.as_ref()).unwrap(), tup.1.clone()))
         .collect();
+    let deactivate_features = deactivate_features
+        .unwrap_or_default()
+        .iter()
+        .map(|p| {
+            let pk = Pubkey::try_from(p.as_ref()).map_err(|_| {
+                Error::new(
+                    Status::GenericFailure,
+                    "Invalid pubkey in `--deactivate-features`".to_string(),
+                )
+            });
+            pk
+        })
+        .collect::<Result<Vec<Pubkey>>>()?;
     let pt = new_bankrun(
         programs,
         compute_max_units.map(|b| b.get_u64().1),
         transaction_account_lock_limit.map(|u| u.get_u64().1 as usize),
         parsed_accounts,
+        deactivate_features,
     );
     Ok(pt.start_with_context().await.into())
 }
@@ -1089,6 +1108,7 @@ pub async fn start(
     accounts: Vec<(Uint8Array, &Account)>,
     compute_max_units: Option<BigInt>,
     transaction_account_lock_limit: Option<BigInt>,
+    deactivate_features: Option<Vec<Uint8Array>>,
 ) -> ProgramTestContext {
     let programs_converted = programs
         .iter()
@@ -1098,11 +1118,17 @@ pub async fn start(
         .iter()
         .map(|p| (convert_pubkey(p.0.clone()), p.1.clone()))
         .collect();
+    let deactivate_features_converted = deactivate_features
+        .unwrap_or_default()
+        .iter()
+        .map(|p| convert_pubkey(p.clone()))
+        .collect();
     let pt = new_bankrun(
         programs_converted,
         compute_max_units.map(|n| n.get_u64().1),
         transaction_account_lock_limit.map(|n| usize::try_from(n.get_u64().1).unwrap()),
         accounts_converted,
+        deactivate_features_converted,
     );
     pt.start_with_context().await.into()
 }
