@@ -1,6 +1,12 @@
 # Changelog
 
-## [0.3.0] 2024-03-16
+## [0.3.1] - 2024-09-07
+
+### Fixed
+
+- Fix TypeError in `sendTransaction` [(#22)](https://github.com/kevinheavey/solana-bankrun/pull/22)
+
+## [0.3.0] - 2024-03-16
 
 ### Added
 
