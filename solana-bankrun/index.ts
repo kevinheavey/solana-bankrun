@@ -500,6 +500,7 @@ export interface AddedAccount {
  * @param accounts - An array of objects indicating what data to write to the given addresses.
  * @param computeMaxUnits - Override the default compute unit limit for a transaction.
  * @param transactionAccountLockLimit - Override the default transaction account lock limit.
+ * @param deactivateFeatures - A list of feature IDs (pubkeys) to deactivate.
  * @returns A container for stuff you'll need to send transactions and interact with the test environment.
  */
 export async function start(
@@ -507,12 +508,14 @@ export async function start(
 	accounts: AddedAccount[],
 	computeMaxUnits?: bigint,
 	transactionAccountLockLimit?: bigint,
+	deactivateFeatures?: PublicKey[],
 ): Promise<ProgramTestContext> {
 	const ctx = await startInner(
 		programs.map((p) => [p.name, p.programId.toBytes()]),
 		accounts.map((a) => [a.address.toBytes(), fromAccountInfo(a.info)]),
 		computeMaxUnits,
 		transactionAccountLockLimit,
+		deactivateFeatures?.map((pk) => pk.toBytes()) ?? [],
 	);
 	return new ProgramTestContext(ctx);
 }
@@ -528,6 +531,7 @@ export async function start(
  * @param accounts - An array of objects indicating what data to write to the given addresses.
  * @param computeMaxUnits - Override the default compute unit limit for a transaction.
  * @param transactionAccountLockLimit - Override the default transaction account lock limit.
+ * @param deactivateFeatures - A list of feature IDs (pubkeys) to deactivate.
  * @returns A container for stuff you'll need to send transactions and interact with the test environment.
  */
 export async function startAnchor(
@@ -536,6 +540,7 @@ export async function startAnchor(
 	accounts: AddedAccount[],
 	computeMaxUnits?: bigint,
 	transactionAccountLockLimit?: bigint,
+	deactivateFeatures?: PublicKey[],
 ): Promise<ProgramTestContext> {
 	const ctx = await startAnchorInner(
 		path,
@@ -543,6 +548,7 @@ export async function startAnchor(
 		accounts.map((a) => [a.address.toBytes(), fromAccountInfo(a.info)]),
 		computeMaxUnits,
 		transactionAccountLockLimit,
+		deactivateFeatures?.map((pk) => pk.toBytes()) ?? [],
 	);
 	return new ProgramTestContext(ctx);
 }

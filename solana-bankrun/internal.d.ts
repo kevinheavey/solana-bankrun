@@ -8,8 +8,8 @@ export const enum CommitmentLevel {
   Confirmed = 1,
   Finalized = 2
 }
-export function startAnchor(path: string, extraPrograms: Array<[string, Uint8Array]>, accounts: Array<[Uint8Array, Account]>, computeMaxUnits?: bigint | undefined | null, transactionAccountLockLimit?: bigint | undefined | null): Promise<ProgramTestContext>
-export function start(programs: Array<[string, Uint8Array]>, accounts: Array<[Uint8Array, Account]>, computeMaxUnits?: bigint | undefined | null, transactionAccountLockLimit?: bigint | undefined | null): Promise<ProgramTestContext>
+export function startAnchor(path: string, extraPrograms: Array<[string, Uint8Array]>, accounts: Array<[Uint8Array, Account]>, computeMaxUnits?: bigint | undefined | null, transactionAccountLockLimit?: bigint | undefined | null, deactivateFeatures?: Array<Uint8Array> | undefined | null): Promise<ProgramTestContext>
+export function start(programs: Array<[string, Uint8Array]>, accounts: Array<[Uint8Array, Account]>, computeMaxUnits?: bigint | undefined | null, transactionAccountLockLimit?: bigint | undefined | null, deactivateFeatures?: Array<Uint8Array> | undefined | null): Promise<ProgramTestContext>
 export class Account {
   constructor(lamports: bigint, data: Uint8Array, owner: Uint8Array, executable: boolean, rentEpoch: bigint)
   get lamports(): bigint
