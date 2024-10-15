@@ -1,6 +1,6 @@
 {
 	"name": "solana-bankrun",
-	"version": "0.3.1",
+	"version": "0.4.0",
 	"main": "dist/index.js",
 	"types": "dist/index.d.ts",
 	"files": [
@@ -63,7 +63,7 @@
 		"docs:build": "NODE_OPTIONS=--openssl-legacy-provider vuepress build docs"
 	},
 	"dependencies": {
-		"@solana/web3.js": "^1.68.0",
+		"@solana/web3.js": "^2.0.0-rc.1",
 		"bs58": "^4.0.1"
 	}
 }

@@ -1,4 +1,21 @@
 import {
+	Commitment,
+	getAddressDecoder,
+	lamports,
+	AccountInfoBase,
+	getAddressEncoder,
+	Address,
+	Transaction,
+	getTransactionEncoder,
+	Signature,
+	Blockhash,
+	blockhash,
+	getCompiledTransactionMessageEncoder,
+	CompiledTransactionMessage,
+	KeyPairSigner,
+	createKeyPairSignerFromPrivateKeyBytes
+} from "@solana/web3.js";
+import {
 	Account,
 	BanksClient as BanksClientInner,
 	EpochSchedule,
@@ -15,6 +32,7 @@ import {
 	Rent,
 	Clock,
 	CommitmentLevel,
+	Inflation,
 } from "./internal";
 export {
 	EpochSchedule,
@@ -24,22 +42,9 @@ export {
 	PohConfig,
 	FeeRateGovernor,
 } from "./internal";
-import {
-	AccountInfo,
-	Keypair,
-	PublicKey,
-	Transaction,
-	Blockhash,
-	TransactionSignature,
-	Message,
-	Commitment,
-	VersionedTransaction,
-	InflationGovernor,
-	Cluster,
-} from "@solana/web3.js";
 import bs58 from "bs58";
 
-export type AccountInfoBytes = AccountInfo<Uint8Array>;
+export type AccountInfoBytes = AccountInfoBase & { data: Uint8Array };
 
 function convertCommitment(c?: Commitment): CommitmentLevel | null {
 	if (c != null) {
@@ -59,10 +64,10 @@ function convertCommitment(c?: Commitment): CommitmentLevel | null {
 function toAccountInfo(acc: Account): AccountInfoBytes {
 	return {
 		executable: acc.executable,
-		owner: new PublicKey(acc.owner),
-		lamports: Number(acc.lamports),
+		owner: getAddressDecoder().decode(acc.owner),
+		lamports: lamports(acc.lamports),
 		data: acc.data,
-		rentEpoch: Number(acc.rentEpoch),
+		rentEpoch: acc.rentEpoch,
 	};
 }
 
@@ -72,7 +77,7 @@ function fromAccountInfo(acc: AccountInfoBytes): Account {
 	return new Account(
 		BigInt(acc.lamports),
 		acc.data,
-		acc.owner.toBytes(),
+		new Uint8Array(getAddressEncoder().encode(acc.owner)),
 		acc.executable,
 		BigInt(rentEpoch),
 	);
@@ -83,8 +88,8 @@ export class TransactionReturnData {
 		this.inner = inner;
 	}
 	private inner: TransactionReturnDataInner;
-	get programId(): PublicKey {
-		return new PublicKey(this.inner.programId);
+	get programId(): Address {
+		return getAddressDecoder().decode(this.inner.programId);
 	}
 	get data(): Uint8Array {
 		return this.inner.data;
@@ -134,7 +139,7 @@ export class BanksTransactionResultWithMeta {
 	}
 }
 
-export type ClusterType = Cluster | "development";
+export type ClusterType = "devnet" | "testnet" | "mainnet-beta" | "development";
 
 export class GenesisConfig {
 	constructor(inner: GenesisConfigInner) {
@@ -144,23 +149,23 @@ export class GenesisConfig {
 	get creationTime(): number {
 		return this.inner.creationTime;
 	}
-	get accounts(): Map<PublicKey, AccountInfoBytes> {
+	get accounts(): Map<Address, AccountInfoBytes> {
 		return new Map(
 			this.inner.accounts.map((obj) => {
-				return [new PublicKey(obj.address), toAccountInfo(obj.account)];
+				return [getAddressDecoder().decode(obj.address), toAccountInfo(obj.account)];
 			}),
 		);
 	}
-	get nativeInstructionProcessors(): Array<[String, PublicKey]> {
+	get nativeInstructionProcessors(): Array<[String, Address]> {
 		return this.inner.nativeInstructionProcessors.map((obj) => [
 			obj.stringVal,
-			new PublicKey(obj.pubkeyVal),
+			getAddressDecoder().decode(obj.pubkeyVal),
 		]);
 	}
-	get rewardsPools(): Map<PublicKey, AccountInfoBytes> {
+	get rewardsPools(): Map<Address, AccountInfoBytes> {
 		return new Map(
 			this.inner.rewardsPools.map((obj) => {
-				return [new PublicKey(obj.address), toAccountInfo(obj.account)];
+				return [getAddressDecoder().decode(obj.address), toAccountInfo(obj.account)];
 			}),
 		);
 	}
@@ -176,7 +181,7 @@ export class GenesisConfig {
 	get rent(): Rent {
 		return this.inner.rent;
 	}
-	get inflation(): InflationGovernor {
+	get inflation(): Inflation {
 		return this.inner.inflation;
 	}
 	get epochSchedule(): EpochSchedule {
@@ -207,11 +212,11 @@ export class BanksClient {
 	 * @returns The account object, if the account exists.
 	 */
 	async getAccount(
-		address: PublicKey,
+		address: Address,
 		commitment?: Commitment,
 	): Promise<AccountInfoBytes | null> {
 		const inner = await this.inner.getAccount(
-			address.toBytes(),
+			new Uint8Array(getAddressEncoder().encode(address)),
 			convertCommitment(commitment),
 		);
 		return inner === null ? null : toAccountInfo(inner);
@@ -221,14 +226,9 @@ export class BanksClient {
 	 * Send a transaction and return immediately.
 	 * @param tx - The transaction to send.
 	 */
-	async sendTransaction(tx: Transaction | VersionedTransaction) {
-		const serialized = tx.serialize();
-		const internal = this.inner;
-		if (tx instanceof Transaction) {
-			await internal.sendLegacyTransaction(serialized);
-		} else {
-			await internal.sendVersionedTransaction(serialized);
-		}
+	async sendTransaction(tx: Transaction) {
+		const serialized = getTransactionEncoder().encode(tx);
+		await this.inner.sendVersionedTransaction(new Uint8Array(serialized));
 	}
 
 	/**
@@ -237,14 +237,10 @@ export class BanksClient {
 	 * @returns The transaction result and metadata.
 	 */
 	async processTransaction(
-		tx: Transaction | VersionedTransaction,
+		tx: Transaction,
 	): Promise<BanksTransactionMeta> {
-		const serialized = tx.serialize();
-		const internal = this.inner;
-		const inner =
-			tx instanceof Transaction
-				? await internal.processLegacyTransaction(serialized)
-				: await internal.processVersionedTransaction(serialized);
+		const serialized = getTransactionEncoder().encode(tx);
+		const inner = await this.inner.processVersionedTransaction(new Uint8Array(serialized));
 		return new BanksTransactionMeta(inner);
 	}
 
@@ -261,14 +257,10 @@ export class BanksClient {
 	 * @returns The transaction result and metadata.
 	 */
 	async tryProcessTransaction(
-		tx: Transaction | VersionedTransaction,
+		tx: Transaction,
 	): Promise<BanksTransactionResultWithMeta> {
-		const serialized = tx.serialize();
-		const internal = this.inner;
-		const inner =
-			tx instanceof Transaction
-				? await internal.tryProcessLegacyTransaction(serialized)
-				: await internal.tryProcessVersionedTransaction(serialized);
+		const serialized = getTransactionEncoder().encode(tx);
+		const inner = await this.inner.tryProcessVersionedTransaction(new Uint8Array(serialized));
 		return new BanksTransactionResultWithMeta(inner);
 	}
 
@@ -279,22 +271,12 @@ export class BanksClient {
 	 * @returns The transaction simulation result.
 	 */
 	async simulateTransaction(
-		tx: Transaction | VersionedTransaction,
+		tx: Transaction,
 		commitment?: Commitment,
 	): Promise<BanksTransactionResultWithMeta> {
-		const internal = this.inner;
-		const serialized = tx.serialize();
+		const serialized = getTransactionEncoder().encode(tx);
 		const commitmentConverted = convertCommitment(commitment);
-		const inner =
-			tx instanceof Transaction
-				? await internal.simulateLegacyTransaction(
-						serialized,
-						commitmentConverted,
-				  )
-				: await internal.simulateVersionedTransaction(
-						serialized,
-						commitmentConverted,
-				  );
+		const inner = await this.inner.simulateVersionedTransaction(new Uint8Array(serialized), commitmentConverted);
 		return new BanksTransactionResultWithMeta(inner);
 	}
 
@@ -310,7 +292,7 @@ export class BanksClient {
 	 * @returns The transaction status, if found.
 	 */
 	async getTransactionStatus(
-		signature: TransactionSignature,
+		signature: Signature,
 	): Promise<TransactionStatus | null> {
 		const decodedSig = bs58.decode(signature);
 		return await this.inner.getTransactionStatus(decodedSig);
@@ -322,7 +304,7 @@ export class BanksClient {
 	 * @returns The transaction statuses, if found.
 	 */
 	async getTransactionStatuses(
-		signatures: TransactionSignature[],
+		signatures: Signature[],
 	): Promise<(TransactionStatus | undefined | null)[]> {
 		const decoded = signatures.map(bs58.decode);
 		return await this.inner.getTransactionStatuses(decoded);
@@ -369,11 +351,11 @@ export class BanksClient {
 	 * @returns The account balance in lamports.
 	 */
 	async getBalance(
-		address: PublicKey,
+		address: Address,
 		commitment?: Commitment,
 	): Promise<bigint> {
 		return await this.inner.getBalance(
-			address.toBytes(),
+			new Uint8Array(getAddressEncoder().encode(address)),
 			convertCommitment(commitment),
 		);
 	}
@@ -390,7 +372,7 @@ export class BanksClient {
 			convertCommitment(commitment),
 		);
 		if (!inner) return null;
-		return [inner.blockhash, inner.lastValidBlockHeight];
+		return [blockhash(inner.blockhash), inner.lastValidBlockHeight];
 	}
 
 	/**
@@ -400,11 +382,11 @@ export class BanksClient {
 	 * @returns The fee for the given message.
 	 */
 	async getFeeForMessage(
-		msg: Message,
+		msg: CompiledTransactionMessage,
 		commitment?: Commitment,
 	): Promise<bigint | null> {
 		return await this.inner.getFeeForMessage(
-			msg.serialize(),
+			new Uint8Array(getCompiledTransactionMessageEncoder().encode(msg)),
 			convertCommitment(commitment),
 		);
 	}
@@ -425,8 +407,8 @@ export class ProgramTestContext {
 		return new BanksClient(this.inner.banksClient);
 	}
 	/** A funded keypair for sending transactions. */
-	get payer(): Keypair {
-		return Keypair.fromSecretKey(this.inner.payer);
+	get payer(): Promise<KeyPairSigner> {
+		return createKeyPairSignerFromPrivateKeyBytes(this.inner.payer);
 	}
 	/** The last blockhash registered when the client was initialized. */
 	get lastBlockhash(): string {
@@ -447,8 +429,8 @@ export class ProgramTestContext {
 	 * @param address - The address to write to.
 	 * @param account - The account object to write.
 	 */
-	setAccount(address: PublicKey, account: AccountInfoBytes) {
-		this.inner.setAccount(address.toBytes(), fromAccountInfo(account));
+	setAccount(address: Address, account: AccountInfoBytes) {
+		this.inner.setAccount(new Uint8Array(getAddressEncoder().encode(address)), fromAccountInfo(account));
 	}
 	/**
 	 * Overwrite the clock sysvar.
@@ -482,11 +464,11 @@ export class ProgramTestContext {
 
 export interface AddedProgram {
 	name: string;
-	programId: PublicKey;
+	programId: Address;
 }
 
 export interface AddedAccount {
-	address: PublicKey;
+	address: Address;
 	info: AccountInfoBytes;
 }
 
@@ -509,8 +491,8 @@ export async function start(
 	transactionAccountLockLimit?: bigint,
 ): Promise<ProgramTestContext> {
 	const ctx = await startInner(
-		programs.map((p) => [p.name, p.programId.toBytes()]),
-		accounts.map((a) => [a.address.toBytes(), fromAccountInfo(a.info)]),
+		programs.map((p) => [p.name, new Uint8Array(getAddressEncoder().encode(p.programId))]),
+		accounts.map((a) => [new Uint8Array(getAddressEncoder().encode(a.address)), fromAccountInfo(a.info)]),
 		computeMaxUnits,
 		transactionAccountLockLimit,
 	);
@@ -539,8 +521,8 @@ export async function startAnchor(
 ): Promise<ProgramTestContext> {
 	const ctx = await startAnchorInner(
 		path,
-		extraPrograms.map((p) => [p.name, p.programId.toBytes()]),
-		accounts.map((a) => [a.address.toBytes(), fromAccountInfo(a.info)]),
+		extraPrograms.map((p) => [p.name, new Uint8Array(getAddressEncoder().encode(p.programId))]),
+		accounts.map((a) => [new Uint8Array(getAddressEncoder().encode(a.address)), fromAccountInfo(a.info)]),
 		computeMaxUnits,
 		transactionAccountLockLimit,
 	);
