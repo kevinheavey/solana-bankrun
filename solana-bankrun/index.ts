@@ -14,9 +14,6 @@ import {
 	CompiledTransactionMessage,
 	KeyPairSigner,
 	createKeyPairSignerFromPrivateKeyBytes,
-	getBase58Decoder,
-	getBase58Encoder,
-	Base58EncodedBytes
 } from "@solana/web3.js";
 import {
 	Account,
@@ -493,14 +490,14 @@ export async function start(
 	accounts: AddedAccount[],
 	computeMaxUnits?: bigint,
 	transactionAccountLockLimit?: bigint,
-	deactivateFeatures?: PublicKey[],
+	deactivateFeatures?: Address[],
 ): Promise<ProgramTestContext> {
 	const ctx = await startInner(
 		programs.map((p) => [p.name, new Uint8Array(getAddressEncoder().encode(p.programId))]),
 		accounts.map((a) => [new Uint8Array(getAddressEncoder().encode(a.address)), fromAccountInfo(a.info)]),
 		computeMaxUnits,
 		transactionAccountLockLimit,
-		deactivateFeatures?.map((pk) => pk.toBytes()) ?? [],
+		deactivateFeatures?.map((pk) => new Uint8Array(getAddressEncoder().encode(pk))) ?? [],
 	);
 	return new ProgramTestContext(ctx);
 }
@@ -525,7 +522,7 @@ export async function startAnchor(
 	accounts: AddedAccount[],
 	computeMaxUnits?: bigint,
 	transactionAccountLockLimit?: bigint,
-	deactivateFeatures?: PublicKey[],
+	deactivateFeatures?: Address[],
 ): Promise<ProgramTestContext> {
 	const ctx = await startAnchorInner(
 		path,
@@ -533,7 +530,7 @@ export async function startAnchor(
 		accounts.map((a) => [new Uint8Array(getAddressEncoder().encode(a.address)), fromAccountInfo(a.info)]),
 		computeMaxUnits,
 		transactionAccountLockLimit,
-		deactivateFeatures?.map((pk) => pk.toBytes()) ?? [],
+		deactivateFeatures?.map((pk) => new Uint8Array(getAddressEncoder().encode(pk))) ?? [],
 	);
 	return new ProgramTestContext(ctx);
 }
