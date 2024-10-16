@@ -408,7 +408,7 @@ export class ProgramTestContext {
 	}
 	/** A funded keypair for sending transactions. */
 	get payer(): Promise<KeyPairSigner> {
-		return createKeyPairSignerFromPrivateKeyBytes(this.inner.payer);
+		return createKeyPairSignerFromPrivateKeyBytes(this.inner.payer.slice(0, 32));
 	}
 	/** The last blockhash registered when the client was initialized. */
 	get lastBlockhash(): Blockhash {
