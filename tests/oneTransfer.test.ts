@@ -1,24 +1,28 @@
 import { start } from "solana-bankrun";
-import { PublicKey, Transaction, SystemProgram } from "@solana/web3.js";
+import { appendTransactionMessageInstructions, createTransactionMessage, generateKeyPairSigner, lamports, pipe, setTransactionMessageFeePayerSigner, setTransactionMessageLifetimeUsingBlockhash, signTransactionMessageWithSigners } from "@solana/web3.js";
+import { getTransferSolInstruction } from "@solana-program/system"
 
 test("one transfer", async () => {
 	const context = await start([], []);
 	const client = context.banksClient;
-	const payer = context.payer;
-	const receiver = PublicKey.unique();
-	const blockhash = context.lastBlockhash;
-	const transferLamports = 1_000_000n;
+	const payer = await context.payer;
+	const receiver = await generateKeyPairSigner().then(x => x.address);
+	const [blockhash, lastValidBlockHeight] = await client.getLatestBlockhash();
+	const transferLamports = lamports(1_000_000n);
 	const ixs = [
-		SystemProgram.transfer({
-			fromPubkey: payer.publicKey,
-			toPubkey: receiver,
-			lamports: transferLamports,
+		getTransferSolInstruction({
+			source: payer,
+			destination: receiver,
+			amount: transferLamports,
 		}),
 	];
-	const tx = new Transaction();
-	tx.recentBlockhash = blockhash;
-	tx.add(...ixs);
-	tx.sign(payer);
+	const tx = await pipe(
+		createTransactionMessage({ version: 0 }),
+		x => appendTransactionMessageInstructions(ixs, x),
+		x => setTransactionMessageFeePayerSigner(payer, x),
+		x => setTransactionMessageLifetimeUsingBlockhash({ blockhash, lastValidBlockHeight }, x),
+		x => signTransactionMessageWithSigners(x),
+	);
 	await client.processTransaction(tx);
 	const balanceAfter = await client.getBalance(receiver);
 	expect(balanceAfter).toBe(transferLamports);

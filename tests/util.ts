@@ -1,12 +1,14 @@
 import { start, ProgramTestContext } from "../solana-bankrun";
-import { PublicKey, LAMPORTS_PER_SOL } from "@solana/web3.js";
+import { address, Address, generateKeyPairSigner, lamports } from "@solana/web3.js";
 import { readFileSync } from "node:fs";
+
+export const LAMPORTS_PER_SOL = lamports(1_000_000_000n);
 
 export async function helloworldProgram(
 	computeMaxUnits?: bigint,
-): Promise<[ProgramTestContext, PublicKey, PublicKey]> {
-	const programId = PublicKey.unique();
-	const greetedPubkey = PublicKey.unique();
+): Promise<[ProgramTestContext, Address, Address]> {
+	const programId = (await generateKeyPairSigner()).address;
+	const greetedPubkey = (await generateKeyPairSigner()).address;
 	const programs = [{ name: "helloworld", programId }];
 	const accounts = [
 		{
@@ -16,6 +18,7 @@ export async function helloworldProgram(
 				owner: programId,
 				lamports: LAMPORTS_PER_SOL,
 				data: new Uint8Array([0, 0, 0, 0]),
+				rentEpoch: 0n,
 			},
 		},
 	];
@@ -26,9 +29,9 @@ export async function helloworldProgram(
 
 export async function helloworldProgramViaSetAccount(
 	computeMaxUnits?: bigint,
-): Promise<[ProgramTestContext, PublicKey, PublicKey]> {
-	const programId = PublicKey.unique();
-	const greetedPubkey = PublicKey.unique();
+): Promise<[ProgramTestContext, Address, Address]> {
+	const programId = (await generateKeyPairSigner()).address;
+	const greetedPubkey = (await generateKeyPairSigner()).address;
 	const programBytes = readFileSync("tests/fixtures/helloworld.so");
 	const accounts = [
 		{
@@ -38,15 +41,17 @@ export async function helloworldProgramViaSetAccount(
 				owner: programId,
 				lamports: LAMPORTS_PER_SOL,
 				data: new Uint8Array([0, 0, 0, 0]),
+				rentEpoch: 0n,
 			},
 		},
 	];
 	const ctx = await start([], accounts, computeMaxUnits);
 	const executableAccount = {
-		lamports: 1_000_000_000_000,
+		lamports: LAMPORTS_PER_SOL,
 		executable: true,
-		owner: new PublicKey("BPFLoader2111111111111111111111111111111111"),
+		owner: address("BPFLoader2111111111111111111111111111111111"),
 		data: programBytes,
+		rentEpoch: 0n,
 	};
 	ctx.setAccount(programId, executableAccount);
 	return [ctx, programId, greetedPubkey];

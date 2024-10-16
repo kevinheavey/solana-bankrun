@@ -22,7 +22,8 @@
 	"license": "MIT",
 	"devDependencies": {
 		"@napi-rs/cli": "^2.15.2",
-		"@solana/spl-token": "^0.3.7",
+		"@solana-program/system": "^0.5.3",
+		"@solana-program/token": "^0.3.2",
 		"@types/bs58": "^4.0.1",
 		"@types/jest": "^29.5.3",
 		"@types/markdown-it": "^14.1.0",

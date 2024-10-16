@@ -13,7 +13,10 @@ import {
 	getCompiledTransactionMessageEncoder,
 	CompiledTransactionMessage,
 	KeyPairSigner,
-	createKeyPairSignerFromPrivateKeyBytes
+	createKeyPairSignerFromPrivateKeyBytes,
+	getBase58Decoder,
+	getBase58Encoder,
+	Base58EncodedBytes
 } from "@solana/web3.js";
 import {
 	Account,
@@ -411,8 +414,8 @@ export class ProgramTestContext {
 		return createKeyPairSignerFromPrivateKeyBytes(this.inner.payer);
 	}
 	/** The last blockhash registered when the client was initialized. */
-	get lastBlockhash(): string {
-		return this.inner.lastBlockhash;
+	get lastBlockhash(): Blockhash {
+		return blockhash(this.inner.lastBlockhash);
 	}
 	/** The chain's genesis config. */
 	get genesisConfig(): GenesisConfig {

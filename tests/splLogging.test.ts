@@ -1,28 +1,25 @@
 import { start } from "solana-bankrun";
-import {
-	PublicKey,
-	Transaction,
-	TransactionInstruction,
-} from "@solana/web3.js";
+import { AccountRole, appendTransactionMessageInstructions, createTransactionMessage, generateKeyPairSigner, IInstruction, pipe, setTransactionMessageFeePayerSigner, setTransactionMessageLifetimeUsingBlockhash, signTransactionMessageWithSigners } from "@solana/web3.js";
 
 test("spl logging", async () => {
-	const programId = PublicKey.unique();
+	const programId = await generateKeyPairSigner().then(x => x.address);
 	const context = await start([{ name: "spl_example_logging", programId }], []);
 	const client = context.banksClient;
-	const payer = context.payer;
-	const blockhash = context.lastBlockhash;
-	const ixs = [
-		new TransactionInstruction({
-			programId,
-			keys: [
-				{ pubkey: PublicKey.unique(), isSigner: false, isWritable: false },
-			],
-		}),
+	const payer = await context.payer;
+	const [blockhash, lastValidBlockHeight] = await client.getLatestBlockhash();
+	const account = await generateKeyPairSigner().then(x => x.address);
+	const ixs: IInstruction[] = [
+		{ programAddress: programId, accounts: [
+			{ address: account, role: AccountRole.WRITABLE },
+		], data: Buffer.from("") },
 	];
-	const tx = new Transaction();
-	tx.recentBlockhash = blockhash;
-	tx.add(...ixs);
-	tx.sign(payer);
+	const tx = await pipe(
+		createTransactionMessage({ version: 0 }),
+		x => appendTransactionMessageInstructions(ixs, x),
+		x => setTransactionMessageFeePayerSigner(payer, x),
+		x => setTransactionMessageLifetimeUsingBlockhash({ blockhash, lastValidBlockHeight }, x),
+		x => signTransactionMessageWithSigners(x),
+	);
 	// let's sim it first
 	const simRes = await client.simulateTransaction(tx);
 	const meta = await client.processTransaction(tx);

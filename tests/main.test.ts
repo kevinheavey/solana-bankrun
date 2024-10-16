@@ -1,18 +1,24 @@
 import { start, ProgramTestContext } from "solana-bankrun";
 import {
-	PublicKey,
-	LAMPORTS_PER_SOL,
-	Transaction,
-	TransactionInstruction,
-	VersionedTransaction,
-	MessageV0,
+	AccountRole,
+	Address,
+	appendTransactionMessageInstruction,
+	appendTransactionMessageInstructions,
+	createTransactionMessage,
+	generateKeyPairSigner,
+	IInstruction,
+	LamportsUnsafeBeyond2Pow53Minus1,
+	pipe,
+	setTransactionMessageFeePayerSigner,
+	setTransactionMessageLifetimeUsingBlockhash,
+	signTransactionMessageWithSigners,
 } from "@solana/web3.js";
-import { helloworldProgram, helloworldProgramViaSetAccount } from "./util";
+import { helloworldProgram, helloworldProgramViaSetAccount, LAMPORTS_PER_SOL } from "./util";
 
 async function getLamports(
 	ctx: ProgramTestContext,
-	address: PublicKey,
-): Promise<number | null> {
+	address: Address,
+): Promise<LamportsUnsafeBeyond2Pow53Minus1 | null> {
 	const acc = await ctx.banksClient.getAccount(address);
 	return acc === null ? null : acc.lamports;
 }
@@ -22,20 +28,23 @@ test("hello world", async () => {
 	const lamports = await getLamports(ctx, greetedPubkey);
 	expect(lamports === LAMPORTS_PER_SOL);
 	const client = ctx.banksClient;
-	const payer = ctx.payer;
-	const blockhash = ctx.lastBlockhash;
+	const payer = await ctx.payer;
+	const [blockhash, lastValidBlockHeight] = await client.getLatestBlockhash();
 	const greetedAccountBefore = await client.getAccount(greetedPubkey);
 	expect(greetedAccountBefore).not.toBeNull();
 	expect(greetedAccountBefore?.data).toEqual(new Uint8Array([0, 0, 0, 0]));
-	const ix = new TransactionInstruction({
-		keys: [{ pubkey: greetedPubkey, isSigner: false, isWritable: true }],
-		programId,
+	const ix: IInstruction = {
+		accounts: [{ address: greetedPubkey, role: AccountRole.WRITABLE }],
+		programAddress: programId,
 		data: Buffer.from([0]),
-	});
-	const tx = new Transaction();
-	tx.recentBlockhash = blockhash;
-	tx.add(ix);
-	tx.sign(payer);
+	};
+	const tx = await pipe(
+		createTransactionMessage({ version: "legacy" }),
+		x => appendTransactionMessageInstruction(ix, x),
+		x => setTransactionMessageFeePayerSigner(payer, x),
+		x => setTransactionMessageLifetimeUsingBlockhash({ blockhash, lastValidBlockHeight }, x),
+		x => signTransactionMessageWithSigners(x),
+	);
 	await client.processTransaction(tx);
 	const greetedAccountAfter = await client.getAccount(greetedPubkey);
 	expect(greetedAccountAfter).not.toBeNull();
@@ -45,20 +54,21 @@ test("hello world", async () => {
 test("versioned tx", async () => {
 	const [ctx, programId, greetedPubkey] = await helloworldProgram();
 	const client = ctx.banksClient;
-	const payer = ctx.payer;
-	const blockhash = ctx.lastBlockhash;
-	const ix = new TransactionInstruction({
-		keys: [{ pubkey: greetedPubkey, isSigner: false, isWritable: true }],
-		programId,
+	const payer = await ctx.payer;
+	const [blockhash, lastValidBlockHeight] = await client.getLatestBlockhash();
+
+	const ix: IInstruction = {
+		accounts: [{ address: greetedPubkey, role: AccountRole.WRITABLE }],
+		programAddress: programId,
 		data: Buffer.from([0]),
-	});
-	const msg = MessageV0.compile({
-		payerKey: payer.publicKey,
-		instructions: [ix],
-		recentBlockhash: blockhash,
-	});
-	const tx = new VersionedTransaction(msg);
-	tx.sign([payer]);
+	};
+	const tx = await pipe(
+		createTransactionMessage({ version: 0 }),
+		x => appendTransactionMessageInstruction(ix, x),
+		x => setTransactionMessageFeePayerSigner(payer, x),
+		x => setTransactionMessageLifetimeUsingBlockhash({ blockhash, lastValidBlockHeight }, x),
+		x => signTransactionMessageWithSigners(x),
+	);
 	await client.processTransaction(tx);
 	const greetedAccountAfter = await client.getAccount(greetedPubkey);
 	expect(greetedAccountAfter).not.toBeNull();
@@ -67,21 +77,26 @@ test("versioned tx", async () => {
 
 test("compute limit", async () => {
 	const [ctx, programId, greetedPubkey] = await helloworldProgram(10n);
-	const ix = new TransactionInstruction({
-		keys: [{ pubkey: greetedPubkey, isSigner: false, isWritable: true }],
-		programId,
-		data: Buffer.from([0]),
-	});
 	const client = ctx.banksClient;
-	const payer = ctx.payer;
-	const blockhash = ctx.lastBlockhash;
+	const payer = await ctx.payer;
+	const [blockhash, lastValidBlockHeight] = await client.getLatestBlockhash();
+
 	const greetedAccountBefore = await client.getAccount(greetedPubkey);
 	expect(greetedAccountBefore).not.toBeNull();
 	expect(greetedAccountBefore?.data).toEqual(new Uint8Array([0, 0, 0, 0]));
-	const tx = new Transaction();
-	tx.recentBlockhash = blockhash;
-	tx.add(ix);
-	tx.sign(payer);
+
+	const ix: IInstruction = {
+		accounts: [{ address: greetedPubkey, role: AccountRole.WRITABLE }],
+		programAddress: programId,
+		data: Buffer.from([0]),
+	};
+	const tx = await pipe(
+		createTransactionMessage({ version: 0 }),
+		x => appendTransactionMessageInstruction(ix, x),
+		x => setTransactionMessageFeePayerSigner(payer, x),
+		x => setTransactionMessageLifetimeUsingBlockhash({ blockhash, lastValidBlockHeight }, x),
+		x => signTransactionMessageWithSigners(x),
+	);
 	await expect(client.processTransaction(tx)).rejects.toThrow(
 		"Program failed to complete",
 	);
@@ -89,39 +104,45 @@ test("compute limit", async () => {
 
 test("tryProcessLegacyTransaction", async () => {
 	const [ctx, programId, greetedPubkey] = await helloworldProgram(10n);
-	const ix = new TransactionInstruction({
-		keys: [{ pubkey: greetedPubkey, isSigner: false, isWritable: true }],
-		programId,
-		data: Buffer.from([0]),
-	});
 	const client = ctx.banksClient;
-	const payer = ctx.payer;
-	const blockhash = ctx.lastBlockhash;
-	const tx = new Transaction();
-	tx.recentBlockhash = blockhash;
-	tx.add(ix);
-	tx.sign(payer);
+	const payer = await ctx.payer;
+	const [blockhash, lastValidBlockHeight] = await client.getLatestBlockhash();
+
+	const ix: IInstruction = {
+		accounts: [{ address: greetedPubkey, role: AccountRole.WRITABLE }],
+		programAddress: programId,
+		data: Buffer.from([0]),
+	};
+	const tx = await pipe(
+		createTransactionMessage({ version: "legacy" }),
+		x => appendTransactionMessageInstruction(ix, x),
+		x => setTransactionMessageFeePayerSigner(payer, x),
+		x => setTransactionMessageLifetimeUsingBlockhash({ blockhash, lastValidBlockHeight }, x),
+		x => signTransactionMessageWithSigners(x),
+	);
+
 	const res = await client.tryProcessTransaction(tx);
 	expect(res.result).toMatch("Program failed to complete");
 });
 
 test("tryProcessVersionedTransaction", async () => {
 	const [ctx, programId, greetedPubkey] = await helloworldProgram(10n);
-	const ix = new TransactionInstruction({
-		keys: [{ pubkey: greetedPubkey, isSigner: false, isWritable: true }],
-		programId,
-		data: Buffer.from([0]),
-	});
 	const client = ctx.banksClient;
-	const payer = ctx.payer;
-	const blockhash = ctx.lastBlockhash;
-	const msg = MessageV0.compile({
-		payerKey: payer.publicKey,
-		instructions: [ix],
-		recentBlockhash: blockhash,
-	});
-	const tx = new VersionedTransaction(msg);
-	tx.sign([payer]);
+	const payer = await ctx.payer;
+	const [blockhash, lastValidBlockHeight] = await client.getLatestBlockhash();
+
+	const ix: IInstruction = {
+		accounts: [{ address: greetedPubkey, role: AccountRole.WRITABLE }],
+		programAddress: programId,
+		data: Buffer.from([0]),
+	};
+	const tx = await pipe(
+		createTransactionMessage({ version: 0 }),
+		x => appendTransactionMessageInstruction(ix, x),
+		x => setTransactionMessageFeePayerSigner(payer, x),
+		x => setTransactionMessageLifetimeUsingBlockhash({ blockhash, lastValidBlockHeight }, x),
+		x => signTransactionMessageWithSigners(x),
+	);
 	const res = await client.tryProcessTransaction(tx);
 	expect(res.result).toMatch("Program failed to complete");
 });
@@ -129,21 +150,29 @@ test("tryProcessVersionedTransaction", async () => {
 test("non-existent account", async () => {
 	const context = await start([], []);
 	const client = context.banksClient;
-	const acc = await client.getAccount(PublicKey.unique(), "processed");
+	const pubkey = await generateKeyPairSigner().then(x => x.address);
+	const acc = await client.getAccount(pubkey, "processed");
 	expect(acc).toBeNull();
 });
 
 test("non-existent program", async () => {
 	const context = await start([], []);
-	const ix = new TransactionInstruction({
-		data: Buffer.alloc(1),
-		keys: [],
-		programId: PublicKey.unique(),
-	});
-	const tx = new Transaction().add(ix);
-	tx.recentBlockhash = context.lastBlockhash;
-	tx.sign(context.payer);
 	const client = context.banksClient;
+	const payer = await context.payer;
+	const [blockhash, lastValidBlockHeight] = await client.getLatestBlockhash();
+	const programId = await generateKeyPairSigner().then(x => x.address);
+	const ix: IInstruction = {
+		accounts: [],
+		programAddress: programId,
+		data: Buffer.alloc(1),
+	};
+	const tx = await pipe(
+		createTransactionMessage({ version: 0 }),
+		x => appendTransactionMessageInstruction(ix, x),
+		x => setTransactionMessageFeePayerSigner(payer, x),
+		x => setTransactionMessageLifetimeUsingBlockhash({ blockhash, lastValidBlockHeight }, x),
+		x => signTransactionMessageWithSigners(x),
+	);
 	await expect(client.processTransaction(tx)).rejects.toThrow(
 		"Attempt to load a program that does not exist",
 	);
@@ -162,23 +191,26 @@ test("warp", async () => {
 
 test("many instructions", async () => {
 	const [ctx, programId, greetedPubkey] = await helloworldProgram();
-	const ix = new TransactionInstruction({
-		keys: [{ pubkey: greetedPubkey, isSigner: false, isWritable: true }],
-		programId,
+	const ix: IInstruction = {
+		accounts: [{ address: greetedPubkey, role: AccountRole.WRITABLE }],
+		programAddress: programId,
 		data: Buffer.from([0]),
-	});
+	};
 	const client = ctx.banksClient;
-	const payer = ctx.payer;
-	const blockhash = ctx.lastBlockhash;
+	const payer = await ctx.payer;
+	const [blockhash, lastValidBlockHeight] = await client.getLatestBlockhash();
 	const greetedAccountBefore = await client.getAccount(greetedPubkey);
 	expect(greetedAccountBefore).not.toBeNull();
 	expect(greetedAccountBefore?.data).toEqual(new Uint8Array([0, 0, 0, 0]));
 	const numIxs = 64;
 	const ixs = Array(numIxs).fill(ix);
-	const tx = new Transaction();
-	tx.recentBlockhash = blockhash;
-	tx.add(...ixs);
-	tx.sign(payer);
+	const tx = await pipe(
+		createTransactionMessage({ version: 0 }),
+		x => appendTransactionMessageInstructions(ixs, x),
+		x => setTransactionMessageFeePayerSigner(payer, x),
+		x => setTransactionMessageLifetimeUsingBlockhash({ blockhash, lastValidBlockHeight }, x),
+		x => signTransactionMessageWithSigners(x),
+	);
 	await client.processTransaction(tx);
 	const greetedAccountAfter = await client.getAccount(greetedPubkey);
 	expect(greetedAccountAfter).not.toBeNull();
@@ -189,20 +221,23 @@ test("add program via setAccount", async () => {
 	const [ctx, programId, greetedPubkey] =
 		await helloworldProgramViaSetAccount();
 	const client = ctx.banksClient;
-	const payer = ctx.payer;
-	const blockhash = ctx.lastBlockhash;
+	const payer = await ctx.payer;
+	const [blockhash, lastValidBlockHeight] = await client.getLatestBlockhash();
 	const greetedAccountBefore = await client.getAccount(greetedPubkey);
 	expect(greetedAccountBefore).not.toBeNull();
 	expect(greetedAccountBefore?.data).toEqual(new Uint8Array([0, 0, 0, 0]));
-	const ix = new TransactionInstruction({
-		keys: [{ pubkey: greetedPubkey, isSigner: false, isWritable: true }],
-		programId,
+	const ix: IInstruction = {
+		accounts: [{ address: greetedPubkey, role: AccountRole.WRITABLE }],
+		programAddress: programId,
 		data: Buffer.from([0]),
-	});
-	const tx = new Transaction();
-	tx.recentBlockhash = blockhash;
-	tx.add(ix);
-	tx.sign(payer);
+	};
+	const tx = await pipe(
+		createTransactionMessage({ version: 0 }),
+		x => appendTransactionMessageInstruction(ix, x),
+		x => setTransactionMessageFeePayerSigner(payer, x),
+		x => setTransactionMessageLifetimeUsingBlockhash({ blockhash, lastValidBlockHeight }, x),
+		x => signTransactionMessageWithSigners(x),
+	);
 	await client.processTransaction(tx);
 	const greetedAccountAfter = await client.getAccount(greetedPubkey);
 	expect(greetedAccountAfter).not.toBeNull();

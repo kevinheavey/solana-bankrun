@@ -1,26 +1,35 @@
 import { Clock, start } from "solana-bankrun";
 import {
-	PublicKey,
-	Transaction,
-	TransactionInstruction,
+	appendTransactionMessageInstructions,
+	createTransactionMessage,
+	generateKeyPairSigner,
+	IInstruction,
+	pipe,
+	setTransactionMessageFeePayerSigner,
+	setTransactionMessageLifetimeUsingBlockhash,
+	signTransactionMessageWithSigners,
 } from "@solana/web3.js";
 
 test("clock", async () => {
-	const programId = PublicKey.unique();
+	const programId = await generateKeyPairSigner().then(x => x.address);
 	const context = await start(
 		[{ name: "bankrun_clock_example", programId }],
 		[],
 	);
 	const client = context.banksClient;
-	const payer = context.payer;
-	const blockhash = context.lastBlockhash;
-	const ixs = [
-		new TransactionInstruction({ keys: [], programId, data: Buffer.from("") }),
+	const payer = await context.payer;
+	const [blockhash, lastValidBlockHeight] = await context.banksClient.getLatestBlockhash();
+	const ixs: IInstruction[] = [
+		{ programAddress: programId, accounts: [], data: Buffer.from("") },
 	];
-	const tx = new Transaction();
-	tx.recentBlockhash = blockhash;
-	tx.add(...ixs);
-	tx.sign(payer);
+	const tx = await pipe(
+		createTransactionMessage({ version: 0 }),
+		x => appendTransactionMessageInstructions(ixs, x),
+		x => setTransactionMessageFeePayerSigner(payer, x),
+		x => setTransactionMessageLifetimeUsingBlockhash({ blockhash, lastValidBlockHeight }, x),
+		x => signTransactionMessageWithSigners(x),
+	);
+
 	// this will fail because it's not January 1970 anymore
 	await expect(client.processTransaction(tx)).rejects.toThrow(
 		"Program failed to complete",
@@ -36,17 +45,16 @@ test("clock", async () => {
 			50n,
 		),
 	);
-	const ixs2 = [
-		new TransactionInstruction({
-			keys: [],
-			programId,
-			data: Buffer.from("foobar"), // unused, just here to dedup the tx
-		}),
+	const ixs2: IInstruction[] = [
+		{ programAddress: programId, accounts: [], data: Buffer.from("foobar") },
 	];
-	const tx2 = new Transaction();
-	tx2.recentBlockhash = blockhash;
-	tx2.add(...ixs2);
-	tx2.sign(payer);
+	const tx2 = await pipe(
+		createTransactionMessage({ version: 0 }),
+		x => appendTransactionMessageInstructions(ixs2, x),
+		x => setTransactionMessageFeePayerSigner(payer, x),
+		x => setTransactionMessageLifetimeUsingBlockhash({ blockhash, lastValidBlockHeight }, x),
+		x => signTransactionMessageWithSigners(x),
+	);
 	// now the transaction goes through
 	await client.processTransaction(tx2);
 });

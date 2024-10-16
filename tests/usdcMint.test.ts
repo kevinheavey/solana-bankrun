@@ -1,46 +1,39 @@
 import { start } from "solana-bankrun";
-import { PublicKey } from "@solana/web3.js";
-import {
-	getAssociatedTokenAddressSync,
-	AccountLayout,
-	ACCOUNT_SIZE,
-	TOKEN_PROGRAM_ID,
-} from "@solana/spl-token";
+import { generateKeyPairSigner, address, lamports } from "@solana/web3.js";
+import { findAssociatedTokenPda, getTokenDecoder, getTokenEncoder, TOKEN_PROGRAM_ADDRESS } from "@solana-program/token";
 
 test("infinite usdc mint", async () => {
-	const owner = PublicKey.unique();
-	const usdcMint = new PublicKey(
+	const owner = await generateKeyPairSigner().then(x => x.address);
+	const usdcMint = address(
 		"EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
 	);
-	const ata = getAssociatedTokenAddressSync(usdcMint, owner, true);
+	const ata = await findAssociatedTokenPda({
+		mint: usdcMint,
+		owner,
+		tokenProgram: TOKEN_PROGRAM_ADDRESS,
+	}).then(x => x[0]);
 	const usdcToOwn = 1_000_000_000_000n;
-	const tokenAccData = Buffer.alloc(ACCOUNT_SIZE);
-	AccountLayout.encode(
-		{
-			mint: usdcMint,
-			owner,
-			amount: usdcToOwn,
-			delegateOption: 0,
-			delegate: PublicKey.default,
-			delegatedAmount: 0n,
-			state: 1,
-			isNativeOption: 0,
-			isNative: 0n,
-			closeAuthorityOption: 0,
-			closeAuthority: PublicKey.default,
-		},
-		tokenAccData,
-	);
+	const tokenAccData = getTokenEncoder().encode({
+		mint: usdcMint,
+		owner,
+		amount: usdcToOwn,
+		delegate: null,
+		delegatedAmount: 0n,
+		state: 1,
+		isNative: null,
+		closeAuthority: null,
+	});
 	const context = await start(
 		[],
 		[
 			{
 				address: ata,
 				info: {
-					lamports: 1_000_000_000,
-					data: tokenAccData,
-					owner: TOKEN_PROGRAM_ID,
+					lamports: lamports(1_000_000_000n),
+					data: new Uint8Array(tokenAccData),
+					owner: TOKEN_PROGRAM_ADDRESS,
 					executable: false,
+					rentEpoch: 0n,
 				},
 			},
 		],
@@ -49,6 +42,6 @@ test("infinite usdc mint", async () => {
 	const rawAccount = await client.getAccount(ata);
 	expect(rawAccount).not.toBeNull();
 	const rawAccountData = rawAccount?.data;
-	const decoded = AccountLayout.decode(rawAccountData);
+	const decoded = getTokenDecoder().decode(rawAccountData);
 	expect(decoded.amount).toBe(usdcToOwn);
 });

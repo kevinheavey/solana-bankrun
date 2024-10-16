@@ -1,20 +1,22 @@
 import { start } from "solana-bankrun";
-import { PublicKey, Connection } from "@solana/web3.js";
+import { address, createSolanaRpc, getBase58Encoder } from "@solana/web3.js";
 
 test("copy accounts from devnet", async () => {
-	const owner = PublicKey.unique();
-	const usdcMint = new PublicKey(
+	const usdcMint = address(
 		"EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
 	);
-	const connection = new Connection("https://api.devnet.solana.com");
-	const accountInfo = await connection.getAccountInfo(usdcMint);
+	const rpc = createSolanaRpc("https://api.devnet.solana.com");
+	const accountInfo = await rpc.getAccountInfo(usdcMint).send();
 
 	const context = await start(
 		[],
 		[
 			{
 				address: usdcMint,
-				info: accountInfo,
+				info: {
+					...accountInfo.value,
+					data: new Uint8Array(getBase58Encoder().encode(accountInfo.value.data)),
+				},
 			},
 		],
 	);

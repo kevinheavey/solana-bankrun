@@ -1,9 +1,9 @@
 import { startAnchor } from "solana-bankrun";
-import { PublicKey } from "@solana/web3.js";
+import { address } from "@solana/web3.js";
 
 test("anchor", async () => {
 	const context = await startAnchor("tests/anchor-example", [], []);
-	const programId = new PublicKey(
+	const programId = address(
 		"Fg6PaFpoGXkYsidMpWTK6W2BeZ7FEfcYkg476zPFsLnS",
 	);
 	const executableAccount = await context.banksClient.getAccount(programId);
