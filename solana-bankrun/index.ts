@@ -408,6 +408,7 @@ export class ProgramTestContext {
 	}
 	/** A funded keypair for sending transactions. */
 	get payer(): Promise<KeyPairSigner> {
+		// First 32 bytes is the private key, last 32 bytes is the public key
 		return createKeyPairSignerFromPrivateKeyBytes(this.inner.payer.slice(0, 32));
 	}
 	/** The last blockhash registered when the client was initialized. */
