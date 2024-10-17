@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.4.0] - 2024-10-17
+
+### Added
+
+- Add `deactivateFeature` param to `start` function [(#31)](https://github.com/kevinheavey/solana-bankrun/pull/31)
+
 ## [0.3.1] - 2024-09-07
 
 ### Fixed
