@@ -3,7 +3,9 @@
 </div>
 
 ---
-# Bankrun
+# Bankrun (deprecated)
+
+DEPRECATED: use [LiteSVM](https://github.com/LiteSVM/litesvm/tree/master/crates/node-litesvm) instead.
 
 `Bankrun` is a superfast, powerful and lightweight framework
 for testing Solana programs in NodeJS.
